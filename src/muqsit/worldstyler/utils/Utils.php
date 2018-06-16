@@ -113,11 +113,6 @@ class Utils {
         $blockdata = explode(":", $block, 2);
         $data = array_map("intval", $blockdata);
 
-        $b = Block::get(...$data);
-        if (!($b instanceof UnknownBlock)) {
-            return $b;
-        }
-
         $name = strtolower($blockdata[0]);
         foreach (BlockFactory::getBlockStatesArray() as $bl) {
             if (strtolower($bl->getName()) === $name) {
@@ -125,6 +120,6 @@ class Utils {
             }
         }
 
-        return $b;
+        return Block::get(...$data);
     }
 }
