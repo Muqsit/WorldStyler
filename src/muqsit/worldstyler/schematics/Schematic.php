@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\schematics;
 
+use muqsit\worldstyler\schematics\async\AsyncSchematic;
 use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
 
@@ -10,30 +11,51 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 
 class Schematic {
 
     /** @var string */
-    private $file;
+    protected $file;
+
+    /** @var CompoundTag */
+    protected $namedtag;
 
     public function __construct(string $file)
     {
         $this->file = $file;
     }
 
-    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_pc_blocks = true, &$time = null) : int
+    public function load() : void
+    {
+        $this->namedtag = (new BigEndianNBTStream())->readCompressed(file_get_contents($this->file));
+    }
+
+    public function getWidth() : int
+    {
+        return $this->namedtag->getShort("Width");
+    }
+
+    public function getLength() : int
+    {
+        return $this->namedtag->getShort("Length");
+    }
+
+    public function getHeight() : int
+    {
+        return $this->namedtag->getShort("Height");
+    }
+
+    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_pc_blocks = true, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
-        $reader = new BigEndianNBTStream();
-        $data = $reader->readCompressed(file_get_contents($this->file));
+        $blockIds = $this->namedtag->getByteArray("Blocks");
+        $blockDatas = $this->namedtag->getByteArray("Data");
 
-        $blockIds = $data->getByteArray("Blocks");
-        $blockDatas = $data->getByteArray("Data");
-
-        $width = $data->getShort("Width");
-        $length = $data->getShort("Length");
-        $height = $data->getShort("Height");
+        $width = $this->getWidth();
+        $length = $this->getLength();
+        $height = $this->getHeight();
 
         $relative_pos = $relative_pos->floor();
         $relx = $relative_pos->x;
@@ -75,6 +97,18 @@ class Schematic {
         }
 
         $time = microtime(true) - $time;
-        return $width * $length * $height;
+        if ($callable !== null) {
+            $callable($time, $width * $length * $height);
+        }
+    }
+
+    public function invalidate() : void
+    {
+        $this->namedtag = null;
+    }
+
+    public function async() : AsyncSchematic
+    {
+        return new AsyncSchematic($this->file);
     }
 }

@@ -14,10 +14,10 @@ use pocketmine\math\Vector3;
 
 class ShapeUtils {
 
-    public static function stack(ChunkManager $level, Selection $selection, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, &$totalTime = null) : ?int
+    public static function stack(ChunkManager $level, Selection $selection, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, ?callable $callable = null) : void
     {
         $totalTime = 0;
-        $blocks = 0;
+        $changed = 0;
 
         $caps = $selection->getClipboardCaps();
         $xCap = $caps->x;
@@ -28,19 +28,25 @@ class ShapeUtils {
         $yIncrease = $increase->y;
         $zIncrease = $increase->z;
 
+        $paste_callable = function (float $timeTaken, int $blocksChanged) use(&$totalTime, &$changed) : void {
+            $totalTime += $timeTaken;
+            $changed += $blocksChanged;
+        };
+
         while (--$repetitions >= 0) {
-            $blocks += ShapeUtils::paste($level, $selection, $start, $replace_air, $time);
-            $totalTime += $time;
+            ShapeUtils::paste($level, $selection, $start, $replace_air, $paste_callable);
 
             $start->x += $xIncrease * $xCap;
             $start->y += $yIncrease * $yCap;
             $start->z += $zIncrease * $zCap;
         }
 
-        return $blocks;
+        if ($callable !== null) {
+            $callable($totalTime, $changed);
+        }
     }
 
-    public static function paste(ChunkManager $level, Selection $selection, Vector3 $relative_pos, bool $replace_air = true, &$time = null) : int
+    public static function paste(ChunkManager $level, Selection $selection, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
     {
         $changed = 0;
         $time = microtime(true);
@@ -82,6 +88,8 @@ class ShapeUtils {
         }
 
         $time = microtime(true) - $time;
-        return $changed;
+        if ($callable !== null) {
+            $callable($time, $changed);
+        }
     }
 }

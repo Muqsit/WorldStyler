@@ -30,6 +30,8 @@ class WorldStyler extends PluginBase {
         if (!is_dir($this->getDataFolder() . 'schematics/')) {
             mkdir($this->getDataFolder() . 'schematics/');
         }
+
+        $this->saveResource("config.yml");
     }
 
     public function getPlayerSelection(Player $player) : ?Selection
@@ -39,7 +41,7 @@ class WorldStyler extends PluginBase {
 
     public function getSelection(int $pid) : ?Selection
     {
-        return $this->selections[$pid] ?? ($this->selections[$pid] = new Selection());
+        return $this->selections[$pid] ?? ($this->selections[$pid] = new Selection($pid));
     }
 
     public function removeSelection(int $pid) : void
@@ -52,11 +54,11 @@ class WorldStyler extends PluginBase {
         $cmd = $cmd->getName();
         switch ($cmd) {
             case '/pos1':
-                $this->getPlayerSelection($issuer)->setPosition(1, $issuer);
+                $this->getPlayerSelection($issuer)->setPosition(1, $issuer->asVector3());
                 $issuer->sendMessage(TF::GREEN . 'Selected position #1 as X=' . $issuer->x . ', Y=' . $issuer->y . ', Z=' . $issuer->z);
                 return true;
             case '/pos2':
-                $this->getPlayerSelection($issuer)->setPosition(2, $issuer);
+                $this->getPlayerSelection($issuer)->setPosition(2, $issuer->asVector3());
                 $issuer->sendMessage(TF::GREEN . 'Selected position #2 as X=' . $issuer->x . ', Y=' . $issuer->y . ', Z=' . $issuer->z);
                 return true;
             case '/copy':
@@ -68,8 +70,18 @@ class WorldStyler extends PluginBase {
                     return false;
                 }
 
-                $changed = Cuboid::fromSelection($selection)->copy($issuer->getLevel(), $issuer, $time);
-                $issuer->sendMessage(TF::GREEN . 'Copied ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's into your clipboard.');
+                $cuboid = Cuboid::fromSelection($selection);
+                if ($this->getConfig()->get("use-async-tasks", false)) {
+                    $cuboid = $cuboid->async();
+                }
+
+                $cuboid->copy(
+                    $issuer->getLevel(),
+                    $issuer->asVector3(),
+                    function (float $time, int $changed) use ($issuer) : void {
+                        $issuer->sendMessage(TF::GREEN . 'Copied ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's into your clipboard.');
+                    }
+                );
                 return true;
             case '/paste':
                 $selection = $this->getPlayerSelection($issuer);
@@ -81,8 +93,15 @@ class WorldStyler extends PluginBase {
 
                 $air = !(isset($args[0]) && $args[0] === "noair");
 
-                $changed = ShapeUtils::paste($issuer->getLevel(), $selection, $issuer, $air, $time);
-                $issuer->sendMessage(TF::GREEN . 'Pasted ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
+                ShapeUtils::paste(
+                    $issuer->getLevel(),
+                    $selection,
+                    $issuer->asVector3(),
+                    $air,
+                    function (float $time, int $changed) use ($issuer, $air) : void {
+                        $issuer->sendMessage(TF::GREEN . 'Pasted ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
+                    }
+                );
                 return true;
             case '/stack':
                 $selection = $this->getPlayerSelection($issuer);
@@ -103,27 +122,51 @@ class WorldStyler extends PluginBase {
                 $repititions = (int) $args[0];
 
                 $issuer->sendMessage(TF::YELLOW . 'Stacking (Multiplying by ' . $increase->__toString() . ')...');
-                $changed = ShapeUtils::stack($issuer->getLevel(), $selection, $issuer, $increase, $repititions, $air, $time);
-                $issuer->sendMessage(TF::GREEN . 'Stacked ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
+
+                ShapeUtils::stack(
+                    $issuer->getLevel(),
+                    $selection,
+                    $issuer->asVector3(),
+                    $increase,
+                    $repititions,
+                    $air,
+                    function (float $time, int $changed) use ($issuer, $air) : void {
+                        $issuer->sendMessage(TF::GREEN . 'Stacked ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
+                    }
+                );
                 return true;
             case '/set':
                 $selection = $this->getPlayerSelection($issuer);
                 $count = $selection->getPositionCount();
+
                 if ($count < 2) {
                     $issuer->sendMessage(TF::RED . 'You have not selected enough vertices.');
                     return false;
                 }
+
                 if (!isset($args[0])) {
                     $issuer->sendMessage(TF::RED . '//set <block>');
                     return false;
                 }
+
                 $block = Utils::getBlockFromString($args[0]);
                 if ($block === null) {
                     $issuer->sendMessage(TF::RED . 'Invalid block given.');
                     return false;
                 }
-                $changed = Cuboid::fromSelection($selection)->set($issuer->getLevel(), $block, $time);
-                $issuer->sendMessage(TF::GREEN . 'Set ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
+
+                $cuboid = Cuboid::fromSelection($selection);
+                if ($this->getConfig()->get("use-async-tasks", false)) {
+                    $cuboid = $cuboid->async();
+                }
+
+                $cuboid->set(
+                    $issuer->getLevel(),
+                    $block,
+                    function (float $time, int $changed) use ($issuer) : void {
+                        $issuer->sendMessage(TF::GREEN . 'Set ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
+                    }
+                );
                 return true;
             case '/replace':
                 $selection = $this->getPlayerSelection($issuer);
@@ -151,8 +194,19 @@ class WorldStyler extends PluginBase {
                     return false;
                 }
 
-                $changed = Cuboid::fromSelection($selection)->replace($issuer->getLevel(), $block1, $block2, $time);
-                $issuer->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
+                $cuboid = Cuboid::fromSelection($selection);
+                if ($this->getConfig()->get("use-async-tasks", false)) {
+                    $cuboid = $cuboid->async();
+                }
+
+                $cuboid->replace(
+                    $issuer->getLevel(),
+                    $block1,
+                    $block2,
+                    function (float $time, int $changed) use ($issuer) : void {
+                        $issuer->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
+                    }
+                );
                 return true;
             case '/schem':
                 if (!isset($args[0]) || ($args[0] !== 'list' && $args[0] !== 'paste') || ($args[0] === 'paste' && !isset($args[1]))) {
@@ -188,8 +242,26 @@ class WorldStyler extends PluginBase {
                     }
 
                     $schematic = new Schematic($file);
-                    $changed = $schematic->paste($issuer->getLevel(), $issuer, true, $time);
-                    $issuer->sendMessage(TF::GREEN . 'Took ' . $time . 's to paste ' . number_format($changed) . ' blocks.');
+                    $is_async = $this->getConfig()->get("use-async-tasks", false);
+
+                    if ($is_async) {
+                        $schematic = $schematic->async();
+                    } else {
+                        $schematic->load();
+                    }
+
+                    $schematic->paste(
+                        $issuer->getLevel(),
+                        $issuer->asVector3(),
+                        true,
+                        function (float $time, int $changed) use ($issuer) : void {
+                            $issuer->sendMessage(TF::GREEN . 'Took ' . number_format($time, 10) . 's to paste ' . number_format($changed) . ' blocks.');
+                        }
+                    );
+
+                    if (!$is_async) {
+                        $schematic->invalidate();
+                    }
                 }
                 return true;
         }
