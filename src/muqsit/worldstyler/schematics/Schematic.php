@@ -6,6 +6,7 @@ namespace muqsit\worldstyler\schematics;
 use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
 
+use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
@@ -20,7 +21,7 @@ class Schematic {
         $this->file = $file;
     }
 
-    public function paste(Vector3 $relative_pos, Level $level, bool $replace_pc_blocks = true, &$time = null) : int
+    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_pc_blocks = true, &$time = null) : int
     {
         $time = microtime(true);
 
@@ -69,7 +70,9 @@ class Schematic {
             }
         }
 
-        Utils::updateChunks($level, $relx >> 4, ($relx + $width - 1) >> 4, $relz >> 4, ($relz + $length - 1) >> 4);
+        if ($level instanceof Level) {
+            Utils::updateChunks($level, $relx >> 4, ($relx + $width - 1) >> 4, $relz >> 4, ($relz + $length - 1) >> 4);
+        }
 
         $time = microtime(true) - $time;
         return $width * $length * $height;

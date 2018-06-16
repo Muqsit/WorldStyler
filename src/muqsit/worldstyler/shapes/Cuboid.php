@@ -8,10 +8,16 @@ use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\block\Block;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 class Cuboid {
+
+    public static function fromSelection(Selection $selection) : Cuboid
+    {
+        return new Cuboid($selection->getPosition(1), $selection->getPosition(2), $selection);
+    }
 
     /** @var Vector3 */
     private $pos1;
@@ -22,14 +28,14 @@ class Cuboid {
     /** @var Selection */
     private $selection;
 
-    public function __construct(Selection $selection)
+    public function __construct(Vector3 $pos1, Vector3 $pos2, Selection $selection)
     {
-        $this->pos1 = $selection->getPosition(1);
-        $this->pos2 = $selection->getPosition(2);
+        $this->pos1 = $pos1;
+        $this->pos2 = $pos2;
         $this->selection = $selection;
     }
 
-    public function copy(Vector3 $relative_pos, Level $level, &$time = null) : int
+    public function copy(ChunkManager $level, Vector3 $relative_pos, &$time = null) : int
     {
         $time = microtime(true);
 
@@ -69,7 +75,7 @@ class Cuboid {
         return ($xCap + 1) * ($yCap + 1) * ($zCap + 1);
     }
 
-    public function set(Block $block, Level $level, &$time = null) : int
+    public function set(ChunkManager $level, Block $block, &$time = null) : int
     {
         $time = microtime(true);
 
@@ -94,13 +100,15 @@ class Cuboid {
             }
         }
 
-        Utils::updateChunks($level, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+        if ($level instanceof Level) {
+            Utils::updateChunks($level, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+        }
 
         $time = microtime(true) - $time;
         return (1 + $maxX - $minX) * (1 + $maxY - $minY) * (1 + $maxZ - $minZ);
     }
 
-    public function replace(Block $find, Block $replace, Level $level, &$time = null) : int
+    public function replace(ChunkManager $level, Block $find, Block $replace, &$time = null) : int
     {
         $time = microtime(true);
 
@@ -129,7 +137,9 @@ class Cuboid {
             }
         }
 
-        Utils::updateChunks($level, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+        if ($level instanceof Level) {
+            Utils::updateChunks($level, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+        }
 
         $time = microtime(true) - $time;
         return (1 + $maxX - $minX) * (1 + $maxY - $minY) * (1 + $maxZ - $minZ);

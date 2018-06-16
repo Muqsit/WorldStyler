@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace muqsit\worldstyler;
 
 use muqsit\worldstyler\schematics\Schematic;
-use muqsit\worldstyler\shapes\Shapes;
+use muqsit\worldstyler\shapes\Cuboid;
+use muqsit\worldstyler\shapes\ShapeUtils;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\command\Command;
@@ -18,13 +19,9 @@ class WorldStyler extends PluginBase {
     /** @var PlayerSelection[] */
     private $selections = [];
 
-    /** @var Shapes */
-    private $shapes;
-
     public function onEnable() : void
     {
         $this->getServer()->getPluginManager()->registerEvents(new EventHandler($this), $this);
-        $this->shapes = new Shapes();
 
         if (!is_dir($this->getDataFolder())) {
             mkdir($this->getDataFolder());
@@ -33,11 +30,6 @@ class WorldStyler extends PluginBase {
         if (!is_dir($this->getDataFolder() . 'schematics/')) {
             mkdir($this->getDataFolder() . 'schematics/');
         }
-    }
-
-    public function getShapes() : Shapes
-    {
-        return $this->shapes;
     }
 
     public function getPlayerSelection(Player $player) : ?Selection
@@ -76,7 +68,7 @@ class WorldStyler extends PluginBase {
                     return false;
                 }
 
-                $changed = $this->getShapes()->getCuboid($selection)->copy($issuer, $issuer->getLevel(), $time);
+                $changed = Cuboid::fromSelection($selection)->copy($issuer->getLevel(), $issuer, $time);
                 $issuer->sendMessage(TF::GREEN . 'Copied ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's into your clipboard.');
                 return true;
             case '/paste':
@@ -89,7 +81,7 @@ class WorldStyler extends PluginBase {
 
                 $air = !(isset($args[0]) && $args[0] === "noair");
 
-                $changed = Shapes::paste($selection, $issuer, $issuer->getLevel(), $air, $time);
+                $changed = ShapeUtils::paste($issuer->getLevel(), $selection, $issuer, $air, $time);
                 $issuer->sendMessage(TF::GREEN . 'Pasted ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
                 return true;
             case '/stack':
@@ -111,7 +103,7 @@ class WorldStyler extends PluginBase {
                 $repititions = (int) $args[0];
 
                 $issuer->sendMessage(TF::YELLOW . 'Stacking (Multiplying by ' . $increase->__toString() . ')...');
-                $changed = Shapes::stack($selection, $issuer, $increase, $issuer->getLevel(), $repititions, $air, $time);
+                $changed = ShapeUtils::stack($issuer->getLevel(), $selection, $issuer, $increase, $repititions, $air, $time);
                 $issuer->sendMessage(TF::GREEN . 'Stacked ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
                 return true;
             case '/set':
@@ -130,7 +122,7 @@ class WorldStyler extends PluginBase {
                     $issuer->sendMessage(TF::RED . 'Invalid block given.');
                     return false;
                 }
-                $changed = $this->getShapes()->getCuboid($selection)->set($block, $issuer->getLevel(), $time);
+                $changed = Cuboid::fromSelection($selection)->set($issuer->getLevel(), $block, $time);
                 $issuer->sendMessage(TF::GREEN . 'Set ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
                 return true;
             case '/replace':
@@ -159,7 +151,7 @@ class WorldStyler extends PluginBase {
                     return false;
                 }
 
-                $changed = $this->getShapes()->getCuboid($selection)->replace($block1, $block2, $issuer->getLevel(), $time);
+                $changed = Cuboid::fromSelection($selection)->replace($issuer->getLevel(), $block1, $block2, $time);
                 $issuer->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
                 return true;
             case '/schem':
@@ -196,7 +188,7 @@ class WorldStyler extends PluginBase {
                     }
 
                     $schematic = new Schematic($file);
-                    $changed = $schematic->paste($issuer, $issuer->getLevel(), true, $time);
+                    $changed = $schematic->paste($issuer->getLevel(), $issuer, true, $time);
                     $issuer->sendMessage(TF::GREEN . 'Took ' . $time . 's to paste ' . number_format($changed) . ' blocks.');
                 }
                 return true;

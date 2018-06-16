@@ -8,17 +8,13 @@ use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\block\Block;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
-class Shapes {
+class ShapeUtils {
 
-    public function getCuboid(Selection $selection) : Cuboid
-    {
-        return new Cuboid($selection);
-    }
-
-    public static function stack(Selection $selection, Vector3 $start, Vector3 $increase, Level $level, int $repetitions, bool $replace_air = true, &$totalTime = null) : ?int
+    public static function stack(ChunkManager $level, Selection $selection, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, &$totalTime = null) : ?int
     {
         $totalTime = 0;
         $blocks = 0;
@@ -33,7 +29,7 @@ class Shapes {
         $zIncrease = $increase->z;
 
         while (--$repetitions >= 0) {
-            $blocks += Shapes::paste($selection, $start, $level, $replace_air, $time);
+            $blocks += ShapeUtils::paste($level, $selection, $start, $replace_air, $time);
             $totalTime += $time;
 
             $start->x += $xIncrease * $xCap;
@@ -44,7 +40,7 @@ class Shapes {
         return $blocks;
     }
 
-    public static function paste(Selection $selection, Vector3 $relative_pos, Level $level, bool $replace_air = true, &$time = null) : int
+    public static function paste(ChunkManager $level, Selection $selection, Vector3 $relative_pos, bool $replace_air = true, &$time = null) : int
     {
         $changed = 0;
         $time = microtime(true);
@@ -81,7 +77,9 @@ class Shapes {
             }
         }
 
-        Utils::updateChunks($level, $relx >> 4, ($relx + $xCap) >> 4, $relz >> 4, ($relz + $zCap) >> 4);
+        if ($level instanceof Level) {
+            Utils::updateChunks($level, $relx >> 4, ($relx + $xCap) >> 4, $relz >> 4, ($relz + $zCap) >> 4);
+        }
 
         $time = microtime(true) - $time;
         return $changed;
