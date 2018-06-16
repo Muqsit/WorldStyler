@@ -62,7 +62,6 @@ class Shapes {
         $zCap = $caps->z;
 
         $iterator = new BlockIterator($level);
-        $currentSubChunk = &$iterator->currentSubChunk;
 
         for ($x = 0; $x <= $xCap; ++$x) {
             $xPos = $relx + $x;
@@ -74,7 +73,7 @@ class Shapes {
                         if ($replace_air || ($fullBlock >> 4) !== Block::AIR) {
                             $yPos = $rely + $y;
                             $iterator->moveTo($xPos, $yPos, $zPos);
-                            $currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock >> 4, $fullBlock & 0xf);
+                            $iterator->currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock >> 4, $fullBlock & 0xf);
                             ++$changed;
                         }
                     }

@@ -40,7 +40,6 @@ class Schematic {
         $relz = $relative_pos->z;
 
         $iterator = new BlockIterator($level);
-        $currentSubChunk = &$iterator->currentSubChunk;
 
         $wl = $width * $length;
 
@@ -65,7 +64,7 @@ class Schematic {
 
                     $yPos = $y + $rely;
                     $iterator->moveTo($xPos, $yPos, $zPos);
-                    $currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $id, $damage);
+                    $iterator->currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $id, $damage);
                 }
             }
         }

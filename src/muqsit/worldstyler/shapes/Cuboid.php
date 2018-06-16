@@ -50,7 +50,6 @@ class Cuboid {
         $yCap = $maxY - $minY;
 
         $iterator = new BlockIterator($level);
-        $currentSubChunk = &$iterator->currentSubChunk;
 
         for ($x = 0; $x <= $xCap; ++$x) {
             $ax = $minX + $x;
@@ -59,7 +58,7 @@ class Cuboid {
                 for ($y = 0; $y <= $yCap; ++$y) {
                     $ay = $minY + $y;
                     $iterator->moveTo($ax, $ay, $az);
-                    $blocks[Level::blockHash($x, $y, $z)] = $currentSubChunk->getFullBlock($ax & 0x0f, $ay & 0x0f, $az & 0x0f);
+                    $blocks[Level::blockHash($x, $y, $z)] = $iterator->currentSubChunk->getFullBlock($ax & 0x0f, $ay & 0x0f, $az & 0x0f);
                 }
             }
         }
@@ -85,13 +84,12 @@ class Cuboid {
         $blockMeta = $block->getDamage();
 
         $iterator = new BlockIterator($level);
-        $currentSubChunk = &$iterator->currentSubChunk;
 
         for ($x = $minX; $x <= $maxX; ++$x) {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
                 for ($y = $minY; $y <= $maxY; ++$y) {
                     $iterator->moveTo($x, $y, $z);
-                    $currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $blockId, $blockMeta);
+                    $iterator->currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $blockId, $blockMeta);
                 }
             }
         }
@@ -119,14 +117,13 @@ class Cuboid {
         $replaceMeta = $replace->getDamage();
 
         $iterator = new BlockIterator($level);
-        $currentSubChunk = &$iterator->currentSubChunk;
 
         for ($x = $minX; $x <= $maxX; ++$x) {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
                 for ($y = $minY; $y <= $maxY; ++$y) {
                     $iterator->moveTo($x, $y, $z);
-                    if ($currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f) === $find) {
-                        $currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $replaceId, $replaceMeta);
+                    if ($iterator->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f) === $find) {
+                        $iterator->currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $replaceId, $replaceMeta);
                     }
                 }
             }
