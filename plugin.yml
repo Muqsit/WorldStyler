@@ -1,0 +1,22 @@
+name: WorldStyler
+main: muqsit\worldstyler\WorldStyler
+api: [3.0.0-ALPHA12, 3.0.0]
+version: 1.0
+
+commands:
+  /pos1:
+    default: op
+  /pos2:
+    default: op
+  /set:
+    default: op
+  /replace:
+    default: op
+  /schem:
+    default: op
+  /copy:
+    default: op
+  /paste:
+    default: op
+  /stack:
+    default: op
