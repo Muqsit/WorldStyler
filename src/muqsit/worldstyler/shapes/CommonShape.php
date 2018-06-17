@@ -48,7 +48,7 @@ class CommonShape {
         };
 
         while (--$repetitions >= 0) {
-            CommonShape::paste($level, $start, $replace_air, $paste_callable);
+            $this->paste($level, $start, $replace_air, $paste_callable);
 
             $start->x += $xIncrease * $xCap;
             $start->y += $yIncrease * $yCap;
