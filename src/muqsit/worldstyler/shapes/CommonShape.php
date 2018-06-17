@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes;
 
+use muqsit\worldstyler\shapes\async\AsyncCommonShape;
 use muqsit\worldstyler\Selection;
 use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
@@ -12,14 +13,27 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
-class ShapeUtils {
+class CommonShape {
 
-    public static function stack(ChunkManager $level, Selection $selection, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, ?callable $callable = null) : void
+    public static function fromSelection(Selection $selection) : CommonShape
+    {
+        return new CommonShape($selection);
+    }
+
+    /** @var Selection */
+    public $selection;
+
+    public function __construct(Selection $selection)
+    {
+        $this->selection = $selection;
+    }
+
+    public function stack(ChunkManager $level, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, ?callable $callable = null) : void
     {
         $totalTime = 0;
         $changed = 0;
 
-        $caps = $selection->getClipboardCaps();
+        $caps = $this->selection->getClipboardCaps();
         $xCap = $caps->x;
         $yCap = $caps->y;
         $zCap = $caps->z;
@@ -34,7 +48,7 @@ class ShapeUtils {
         };
 
         while (--$repetitions >= 0) {
-            ShapeUtils::paste($level, $selection, $start, $replace_air, $paste_callable);
+            CommonShape::paste($level, $start, $replace_air, $paste_callable);
 
             $start->x += $xIncrease * $xCap;
             $start->y += $yIncrease * $yCap;
@@ -46,19 +60,19 @@ class ShapeUtils {
         }
     }
 
-    public static function paste(ChunkManager $level, Selection $selection, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
+    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
     {
         $changed = 0;
         $time = microtime(true);
 
-        $relative_pos = $relative_pos->floor()->add($selection->getClipboardRelativePos());
+        $relative_pos = $relative_pos->floor()->add($this->selection->getClipboardRelativePos());
         $relx = $relative_pos->x;
         $rely = $relative_pos->y;
         $relz = $relative_pos->z;
 
-        $clipboard = $selection->getClipboard();
+        $clipboard = $this->selection->getClipboard();
 
-        $caps = $selection->getClipboardCaps();
+        $caps = $this->selection->getClipboardCaps();
         $xCap = $caps->x;
         $yCap = $caps->y;
         $zCap = $caps->z;
@@ -91,5 +105,10 @@ class ShapeUtils {
         if ($callable !== null) {
             $callable($time, $changed);
         }
+    }
+
+    public function async() : AsyncCommonShape
+    {
+        return new AsyncCommonShape($this->selection);
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace muqsit\worldstyler;
 
 use muqsit\worldstyler\schematics\Schematic;
+use muqsit\worldstyler\shapes\CommonShape;
 use muqsit\worldstyler\shapes\Cuboid;
-use muqsit\worldstyler\shapes\ShapeUtils;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\command\Command;
@@ -93,9 +93,13 @@ class WorldStyler extends PluginBase {
 
                 $air = !(isset($args[0]) && $args[0] === "noair");
 
-                ShapeUtils::paste(
+                $common_shape = CommonShape::fromSelection($selection);
+                if ($this->getConfig()->get("use-async-tasks", false)) {
+                    $cuboid = $common_shape->async();
+                }
+
+                $common_shape->paste(
                     $issuer->getLevel(),
-                    $selection,
                     $issuer->asVector3(),
                     $air,
                     function (float $time, int $changed) use ($issuer, $air) : void {
@@ -118,14 +122,18 @@ class WorldStyler extends PluginBase {
 
                 $air = !(isset($args[1]) && $args[1] === "noair");
 
+                $common_shape = CommonShape::fromSelection($selection);
+                if ($this->getConfig()->get("use-async-tasks", false)) {
+                    $cuboid = $common_shape->async();
+                }
+
                 $increase = $issuer->getDirectionVector()->round();
                 $repititions = (int) $args[0];
 
                 $issuer->sendMessage(TF::YELLOW . 'Stacking (Multiplying by ' . $increase->__toString() . ')...');
 
-                ShapeUtils::stack(
+                $common_shape->stack(
                     $issuer->getLevel(),
-                    $selection,
                     $issuer->asVector3(),
                     $increase,
                     $repititions,
