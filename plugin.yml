@@ -1,6 +1,6 @@
 name: WorldStyler
 main: muqsit\worldstyler\WorldStyler
-api: [3.0.0-ALPHA12, 3.0.0]
+api: 3.0.0
 version: 1.0
 
 commands:
