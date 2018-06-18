@@ -6,7 +6,6 @@ namespace muqsit\worldstyler\utils;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\WoodenFence;
-use pocketmine\block\UnknownBlock;
 use pocketmine\level\Level;
 
 class Utils {

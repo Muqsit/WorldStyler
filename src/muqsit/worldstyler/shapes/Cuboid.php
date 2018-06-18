@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace muqsit\worldstyler\shapes;
 
 use muqsit\worldstyler\Selection;
+use muqsit\worldstyler\shapes\async\AsyncCuboid;
 use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
 
@@ -20,41 +21,52 @@ class Cuboid {
     }
 
     /** @var Vector3 */
-    private $pos1;
+    public $pos1;
 
     /** @var Vector3 */
-    private $pos2;
+    public $pos2;
 
     /** @var Selection */
-    private $selection;
+    public $selection;
 
     public function __construct(Vector3 $pos1, Vector3 $pos2, Selection $selection)
     {
+        $minX = min($pos1->x, $pos2->x);
+        $maxX = max($pos1->x, $pos2->x);
+        $minY = min($pos1->y, $pos2->y);
+        $maxY = max($pos1->y, $pos2->y);
+        $minZ = min($pos1->z, $pos2->z);
+        $maxZ = max($pos1->z, $pos2->z);
+
+        $pos1->x = $minX;
+        $pos1->y = $minY;
+        $pos1->z = $minZ;
+
+        $pos2->x = $maxX;
+        $pos2->y = $maxY;
+        $pos2->z = $maxZ;
+
         $this->pos1 = $pos1;
         $this->pos2 = $pos2;
         $this->selection = $selection;
     }
 
-    public function copy(ChunkManager $level, Vector3 $relative_pos, &$time = null) : int
+    public function copy(ChunkManager $level, Vector3 $relative_pos, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
-        $minX = min($this->pos1->x, $this->pos2->x);
-        $maxX = max($this->pos1->x, $this->pos2->x);
-        $minY = min($this->pos1->y, $this->pos2->y);
-        $maxY = max($this->pos1->y, $this->pos2->y);
-        $minZ = min($this->pos1->z, $this->pos2->z);
-        $maxZ = max($this->pos1->z, $this->pos2->z);
+        $s_pos = $this->pos1->subtract($relative_pos->floor());
 
-        $pos = new Vector3($minX, $minY, $minZ);
-        $s_pos = $pos->subtract($relative_pos->floor());
+        $cap = $this->pos2->subtract($this->pos1);
+        $xCap = $cap->x;
+        $yCap = $cap->y;
+        $zCap = $cap->z;
+
+        $minX = $this->pos1->x;
+        $minY = $this->pos1->y;
+        $minZ = $this->pos1->z;
 
         $blocks = [];
-
-        $xCap = $maxX - $minX;
-        $zCap = $maxZ - $minZ;
-        $yCap = $maxY - $minY;
-
         $iterator = new BlockIterator($level);
 
         for ($x = 0; $x <= $xCap; ++$x) {
@@ -69,22 +81,24 @@ class Cuboid {
             }
         }
 
-        $this->selection->setClipboard($blocks, $s_pos, new Vector3($xCap, $yCap, $zCap));
+        $this->selection->setClipboard($blocks, $s_pos, $cap);
 
         $time = microtime(true) - $time;
-        return ($xCap + 1) * ($yCap + 1) * ($zCap + 1);
+        if ($callable !== null) {
+            $callable($time, ($xCap + 1) * ($yCap + 1) * ($zCap + 1));
+        }
     }
 
-    public function set(ChunkManager $level, Block $block, &$time = null) : int
+    public function set(ChunkManager $level, Block $block, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
-        $minX = min($this->pos1->x, $this->pos2->x);
-        $maxX = max($this->pos1->x, $this->pos2->x);
-        $minY = min($this->pos1->y, $this->pos2->y);
-        $maxY = max($this->pos1->y, $this->pos2->y);
-        $minZ = min($this->pos1->z, $this->pos2->z);
-        $maxZ = max($this->pos1->z, $this->pos2->z);
+        $minX = $this->pos1->x;
+        $maxX = $this->pos2->x;
+        $minY = $this->pos1->y;
+        $maxY = $this->pos2->y;
+        $minZ = $this->pos1->z;
+        $maxZ = $this->pos2->z;
 
         $blockId = $block->getId();
         $blockMeta = $block->getDamage();
@@ -105,19 +119,21 @@ class Cuboid {
         }
 
         $time = microtime(true) - $time;
-        return (1 + $maxX - $minX) * (1 + $maxY - $minY) * (1 + $maxZ - $minZ);
+        if ($callable !== null) {
+            $callable($time, (1 + $maxX - $minX) * (1 + $maxY - $minY) * (1 + $maxZ - $minZ));
+        }
     }
 
-    public function replace(ChunkManager $level, Block $find, Block $replace, &$time = null) : int
+    public function replace(ChunkManager $level, Block $find, Block $replace, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
-        $minX = min($this->pos1->x, $this->pos2->x);
-        $maxX = max($this->pos1->x, $this->pos2->x);
-        $minY = min($this->pos1->y, $this->pos2->y);
-        $maxY = max($this->pos1->y, $this->pos2->y);
-        $minZ = min($this->pos1->z, $this->pos2->z);
-        $maxZ = max($this->pos1->z, $this->pos2->z);
+        $minX = $this->pos1->x;
+        $maxX = $this->pos2->x;
+        $minY = $this->pos1->y;
+        $maxY = $this->pos2->y;
+        $minZ = $this->pos1->z;
+        $maxZ = $this->pos2->z;
 
         $find = ($find->getId() << 4) | $find->getDamage();//fullBlock
 
@@ -142,6 +158,13 @@ class Cuboid {
         }
 
         $time = microtime(true) - $time;
-        return (1 + $maxX - $minX) * (1 + $maxY - $minY) * (1 + $maxZ - $minZ);
+        if ($callable !== null) {
+            $callable($time, (1 + $maxX - $minX) * (1 + $maxY - $minY) * (1 + $maxZ - $minZ));
+        }
+    }
+
+    public function async() : AsyncCuboid
+    {
+        return new AsyncCuboid($this->pos1, $this->pos2, $this->selection);
     }
 }

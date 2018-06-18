@@ -15,10 +15,23 @@ class Selection {
     private $clipboard;
 
     /** @var Vector3 */
-    private $clipboard_perspective;
+    private $clipboard_relative_pos;
 
     /** @var Vector3 */
     private $clipboard_caps;
+
+    /** @var int */
+    private $id;
+
+    public function __construct(int $id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId() : int
+    {
+        return $this->id;
+    }
 
     public function setClipboard(array $blockArray, Vector3 $relative_pos, Vector3 $caps) : void
     {
