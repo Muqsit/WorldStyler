@@ -5,18 +5,45 @@ version: 1.0
 
 commands:
   /pos1:
-    default: op
+    permission: worldstyler.selection
   /pos2:
-    default: op
+    permission: worldstyler.selection
   /set:
-    default: op
+    permission: worlstyler.set
   /replace:
-    default: op
+    permission: worlstyler.replace
   /schem:
-    default: op
+    permission: worldstyler.schem
   /copy:
-    default: op
+    permission: worldstyler.copy
   /paste:
-    default: op
+    permission: worldstyler.paste
   /stack:
-    default: op
+    permission: worldstyler.stack
+
+permissions:
+  worldstyler:
+    default: false
+    description: "Grants access to all WorldStyler permissions."
+    children:
+      selection:
+        description: "Grants access to //pos1 and //pos2 commands."
+        default: op
+      set:
+        description: "Grants access to //set command."
+        default: op
+      replace:
+        description: "Grants access to //replace command."
+        default: op
+      schem:
+        description: "Grants access to //schem command."
+        default: op
+      copy:
+        description: "Grants access to //copy command."
+        default: op
+      paste:
+        description: "Grants access to //paste command."
+        default: op
+      stack:
+        description: "Grants access to //stack command."
+        default: op
