@@ -9,9 +9,9 @@ commands:
   /pos2:
     permission: worldstyler.selection
   /set:
-    permission: worlstyler.set
+    permission: worldstyler.set
   /replace:
-    permission: worlstyler.replace
+    permission: worldstyler.replace
   /schem:
     permission: worldstyler.schem
   /copy:
@@ -26,24 +26,24 @@ permissions:
     default: false
     description: "Grants access to all WorldStyler permissions."
     children:
-      selection:
+      worldstyler.selection:
         description: "Grants access to //pos1 and //pos2 commands."
         default: op
-      set:
+      worldstyler.set:
         description: "Grants access to //set command."
         default: op
-      replace:
+      worldstyler.replace:
         description: "Grants access to //replace command."
         default: op
-      schem:
+      worldstyler.schem:
         description: "Grants access to //schem command."
         default: op
-      copy:
+      worldstyler.copy:
         description: "Grants access to //copy command."
         default: op
-      paste:
+      worldstyler.paste:
         description: "Grants access to //paste command."
         default: op
-      stack:
+      worldstyler.stack:
         description: "Grants access to //stack command."
         default: op
