@@ -47,9 +47,9 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
         $this->saveChunks($level, $rel_pos, $rel_pos->add($width, 0, $length));
     }
 
-    public function onProgressUpdate(Server $server, $progress) : void
+    public function onProgressUpdate($progress) : void
     {
-        $level = $server->getLevel($this->levelId);
+        $level = Server::getInstance()->getLevelManager()->getLevel($this->levelId);
         [$width, $length] = $progress;
 
         $chunks = [];

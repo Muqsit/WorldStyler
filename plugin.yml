@@ -1,6 +1,6 @@
 name: WorldStyler
 main: muqsit\worldstyler\WorldStyler
-api: 3.0.0
+api: [3.0.0, 4.0.0]
 version: 1.0
 
 commands:
@@ -31,19 +31,19 @@ permissions:
         default: op
       worldstyler.set:
         description: "Grants access to //set command."
-        default: op
+        default: false
       worldstyler.replace:
         description: "Grants access to //replace command."
-        default: op
+        default: false
       worldstyler.schem:
         description: "Grants access to //schem command."
-        default: op
+        default: false
       worldstyler.copy:
         description: "Grants access to //copy command."
-        default: op
+        default: false
       worldstyler.paste:
         description: "Grants access to //paste command."
-        default: op
+        default: false
       worldstyler.stack:
         description: "Grants access to //stack command."
-        default: op
+        default: false

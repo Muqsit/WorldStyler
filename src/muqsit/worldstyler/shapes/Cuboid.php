@@ -101,7 +101,7 @@ class Cuboid {
         $maxZ = $this->pos2->z;
 
         $blockId = $block->getId();
-        $blockMeta = $block->getDamage();
+        $blockMeta = $block->getMeta();
 
         $iterator = new BlockIterator($level);
 
@@ -135,10 +135,10 @@ class Cuboid {
         $minZ = $this->pos1->z;
         $maxZ = $this->pos2->z;
 
-        $find = ($find->getId() << 4) | $find->getDamage();//fullBlock
+        $find = ($find->getId() << 4) | $find->getMeta();//fullBlock
 
         $replaceId = $replace->getId();
-        $replaceMeta = $replace->getDamage();
+        $replaceMeta = $replace->getMeta();
 
         $iterator = new BlockIterator($level);
 

@@ -112,10 +112,10 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
         $this->chunks = self::serialize($chunks);
     }
 
-    public function onCompletion(Server $server) : void
+    public function onCompletion() : void
     {
         if ($this->set_chunks) {
-            $level = $server->getLevel($this->levelId);
+            $level = Server::getInstance()->getLevelManager()->getLevel($this->levelId);
             foreach (self::unserialize($this->chunks) as $hash => $chunk) {
                 Level::getXZ($hash, $chunkX, $chunkZ);
                 $level->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($chunk));

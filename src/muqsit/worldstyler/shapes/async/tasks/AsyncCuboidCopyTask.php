@@ -44,11 +44,11 @@ class AsyncCuboidCopyTask extends AsyncCuboidTask {
         $this->selectionId = $cuboid->selection->getId();
     }
 
-    public function onCompletion(Server $server) : void
+    public function onCompletion() : void
     {
-        parent::onCompletion($server);
+        parent::onCompletion();
 
-        $selection = $server->getPluginManager()->getPlugin("WorldStyler")->getSelection($this->selectionId);
+        $selection = Server::getInstance()->getPluginManager()->getPlugin("WorldStyler")->getSelection($this->selectionId);
         if ($selection !== null) {
             $selection->setClipboard(self::unserialize($this->clipboard), $this->relative_pos, self::unserialize($this->clipboard_caps));
         }

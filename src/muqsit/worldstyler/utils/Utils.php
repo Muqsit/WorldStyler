@@ -7,6 +7,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\WoodenFence;
 use pocketmine\level\Level;
+use pocketmine\item\ItemFactory;
 
 class Utils {
 
@@ -119,16 +120,11 @@ class Utils {
 
     public static function getBlockFromString(string $block) : ?Block
     {
-        $blockdata = explode(":", $block, 2);
-        $data = array_map("intval", $blockdata);
-
-        $name = strtolower($blockdata[0]);
-        foreach (BlockFactory::getBlockStatesArray() as $bl) {
-            if (strtolower($bl->getName()) === $name) {
-                return Block::get($bl->getId(), $data[1] ?? $bl->getDamage());
-            }
+        try {
+            return ItemFactory::fromString($block)->getBlock();
+        } catch (\InvalidArgumentException $e) {
+            $data = explode(":", $block, 3);
+            return BlockFactory::get((int) $data[0], (int) $data[1] ?? 0);
         }
-
-        return Block::get(...$data);
     }
 }
