@@ -109,13 +109,6 @@ class Utils {
                 }
             }
         }
-/*
-        for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
-            for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $level->setChunk($chunkX, $chunkZ, $level->getChunk($chunkX, $chunkZ), false);
-            }
-        }
-*/
     }
 
     public static function getBlockFromString(string $block) : ?Block
@@ -124,7 +117,7 @@ class Utils {
             return ItemFactory::fromString($block)->getBlock();
         } catch (\InvalidArgumentException $e) {
             $data = explode(":", $block, 3);
-            return BlockFactory::get((int) $data[0], (int) $data[1] ?? 0);
+            return BlockFactory::get((int) $data[0], (int) ($data[1] ?? 0));
         }
     }
 }

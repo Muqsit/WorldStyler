@@ -6,6 +6,7 @@ namespace muqsit\worldstyler\shapes;
 use muqsit\worldstyler\Selection;
 use muqsit\worldstyler\shapes\async\AsyncCuboid;
 use muqsit\worldstyler\utils\BlockIterator;
+use muqsit\worldstyler\utils\BlockToBlockMapping;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\block\Block;
@@ -124,7 +125,7 @@ class Cuboid {
         }
     }
 
-    public function replace(ChunkManager $level, Block $find, Block $replace, ?callable $callable = null) : void
+    public function replace(ChunkManager $level, BlockToBlockMapping $mapping, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -135,19 +136,15 @@ class Cuboid {
         $minZ = $this->pos1->z;
         $maxZ = $this->pos2->z;
 
-        $find = ($find->getId() << 4) | $find->getMeta();//fullBlock
-
-        $replaceId = $replace->getId();
-        $replaceMeta = $replace->getMeta();
-
+        $mapping = $mapping->toFullBlock();
         $iterator = new BlockIterator($level);
 
         for ($x = $minX; $x <= $maxX; ++$x) {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
                 for ($y = $minY; $y <= $maxY; ++$y) {
                     $iterator->moveTo($x, $y, $z);
-                    if ($iterator->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f) === $find) {
-                        $iterator->currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $replaceId, $replaceMeta);
+                    if (isset($mapping[$fullBlock = $iterator->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)])) {
+                        $iterator->currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $mapping[$fullBlock][0], $mapping[$fullBlock][1]);
                     }
                 }
             }

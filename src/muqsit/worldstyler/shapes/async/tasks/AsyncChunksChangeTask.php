@@ -118,7 +118,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
             $level = Server::getInstance()->getLevelManager()->getLevel($this->levelId);
             foreach (self::unserialize($this->chunks) as $hash => $chunk) {
                 Level::getXZ($hash, $chunkX, $chunkZ);
-                $level->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($chunk));
+                $level->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($chunk), false);
             }
         }
 

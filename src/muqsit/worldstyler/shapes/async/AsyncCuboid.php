@@ -7,6 +7,7 @@ use muqsit\worldstyler\shapes\async\tasks\AsyncCuboidCopyTask;
 use muqsit\worldstyler\shapes\async\tasks\AsyncCuboidReplaceTask;
 use muqsit\worldstyler\shapes\async\tasks\AsyncCuboidSetTask;
 use muqsit\worldstyler\shapes\Cuboid;
+use muqsit\worldstyler\utils\BlockToBlockMapping;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
@@ -37,15 +38,14 @@ class AsyncCuboid extends Cuboid {
         $level->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    public function replace(ChunkManager $level, Block $find, Block $replace, ?callable $callable = null) : void
+    public function replace(ChunkManager $level, BlockToBlockMapping $mapping, ?callable $callable = null) : void
     {
         if (!($level instanceof Level)) {
             throw new \InvalidArgumentException("\$level should be an instance of " . Level::class . " in asynchronous classes, got " . get_class($level));
         }
 
         $task = new AsyncCuboidReplaceTask(Cuboid::fromSelection($this->selection), $level, $this->getChunks($level), $callable);
-        $task->find($find);
-        $task->replace($replace);
+        $task->setMapping($mapping);
         $level->getServer()->getAsyncPool()->submitTask($task);
     }
 

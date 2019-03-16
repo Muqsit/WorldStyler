@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace muqsit\worldstyler\executors;
 
 use muqsit\worldstyler\shapes\Cuboid;
+use muqsit\worldstyler\utils\BlockToBlockMapping;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\command\Command;
@@ -27,23 +28,22 @@ class ReplaceCommandExecutor extends BaseCommandExecutor {
             return false;
         }
 
-        if (!isset($args[1])) {
-            $sender->sendMessage(TF::RED . '//replace <blockToReplace> <replacementBlock>');
+        if ((count($args) & 1) === 1) {
+            $sender->sendMessage(TF::RED . '//replace ...<blockToReplace> <replacementBlock>');
             return false;
         }
 
-        [$block1, $block2] = $args;
+        $mapping = new BlockToBlockMapping();
+        foreach (array_chunk($args, 2) as $pair) {
+            foreach ($pair as &$block) {
+                $block = Utils::getBlockFromString($block);
+                if ($block === null) {
+                    $sender->sendMessage(TF::RED . 'Invalid block ' . $block . ' given.');
+                    return false;
+                }
+            }
 
-        $block1 = Utils::getBlockFromString($block1);
-        if ($block1 === null) {
-            $sender->sendMessage(TF::RED . 'Invalid block ' . $block1 . ' given.');
-            return false;
-        }
-
-        $block2 = Utils::getBlockFromString($block2);
-        if ($block2 === null) {
-            $sender->sendMessage(TF::RED . 'Invalid block ' . $block2 . ' given.');
-            return false;
+            $mapping->add($pair[0], $pair[1]);
         }
 
         $cuboid = Cuboid::fromSelection($selection);
@@ -58,8 +58,7 @@ class ReplaceCommandExecutor extends BaseCommandExecutor {
 
         $cuboid->replace(
             $sender->getLevel(),
-            $block1,
-            $block2,
+            $mapping,
             function (float $time, int $changed) use ($sender) : void {
                 $sender->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
             }
