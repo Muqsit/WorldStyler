@@ -5,7 +5,6 @@ namespace muqsit\worldstyler\schematics;
 
 use muqsit\worldstyler\schematics\async\AsyncSchematic;
 use muqsit\worldstyler\utils\BlockIterator;
-use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
@@ -46,7 +45,7 @@ class Schematic {
         return $this->namedtag->getShort("Height");
     }
 
-    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_pc_blocks = true, ?callable $callable = null) : void
+    public function paste(ChunkManager $level, Vector3 $relative_pos, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -76,18 +75,9 @@ class Schematic {
                 for ($y = 0; $y < $height; ++$y) {
                     $index = $y * $wl + $zwx;
 
-                    $id = ord($blockIds{$index});
-                    $damage = ord($blockDatas{$index});
-
-                    if ($replace_pc_blocks && isset(Utils::REPLACEMENTS[$id])) {
-                        [$new_id, $new_damage] = Utils::REPLACEMENTS[$id][$damage] ?? Utils::REPLACEMENTS[$id][-1] ?? [$id, $damage];
-                        $id = $new_id ?? $id;
-                        $damage = $new_damage ?? $damage;
-                    }
-
                     $yPos = $y + $rely;
                     $iterator->moveTo($xPos, $yPos, $zPos);
-                    $iterator->currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $id, $damage);
+                    $iterator->currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, ord($blockIds{$index}), ord($blockDatas{$index}));
                 }
             }
         }

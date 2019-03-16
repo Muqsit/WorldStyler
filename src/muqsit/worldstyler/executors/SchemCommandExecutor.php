@@ -69,7 +69,6 @@ class SchemCommandExecutor extends BaseCommandExecutor {
             $schematic->paste(
                 $sender->getLevel(),
                 $sender->asVector3(),
-                true,
                 function (float $time, int $changed) use ($sender) : void {
                     $sender->sendMessage(TF::GREEN . 'Took ' . number_format($time, 10) . 's to paste ' . number_format($changed) . ' blocks.');
                 }

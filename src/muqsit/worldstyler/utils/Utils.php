@@ -5,89 +5,11 @@ namespace muqsit\worldstyler\utils;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\WoodenFence;
+use pocketmine\block\utils\TreeType;
 use pocketmine\level\Level;
 use pocketmine\item\ItemFactory;
 
 class Utils {
-
-    const REPLACEMENTS = [
-        Block::ACTIVATOR_RAIL => [
-            -1 => [Block::WOODEN_SLAB, null]//-1 = all block metas, null = dont change the block's meta.
-        ],
-        Block::INVISIBLE_BEDROCK => [
-            -1 => [Block::STAINED_GLASS, null]
-        ],
-        Block::DROPPER => [
-            -1 => [Block::DOUBLE_WOODEN_SLAB, null]
-        ],
-        188 => [
-            -1 => [Block::FENCE, WoodenFence::FENCE_SPRUCE]
-        ],
-        189 => [
-            -1 => [Block::FENCE, WoodenFence::FENCE_BIRCH]
-        ],
-        190 => [
-            -1 => [Block::FENCE, WoodenFence::FENCE_JUNGLE]
-        ],
-        191 => [
-            -1 => [Block::FENCE, WoodenFence::FENCE_DARKOAK]
-        ],
-        192 => [
-            -1 => [Block::FENCE, WoodenFence::FENCE_ACACIA]
-        ],
-        Block::DOUBLE_STONE_SLAB => [
-            6 => [Block::DOUBLE_STONE_SLAB, 7],
-            7 => [Block::DOUBLE_STONE_SLAB, 6],
-        ],
-        Block::STONE_SLAB => [
-            6 => [Block::STONE_SLAB, 7],
-            7 => [Block::STONE_SLAB, 6],
-            15 => [Block::STONE_SLAB, 14]
-        ],
-        Block::TRAPDOOR => [
-            0 => [null, 3],
-            1 => [null, 2],
-            2 => [null, 1],
-            3 => [null, 0],
-            4 => [null, 7],
-            5 => [null, 6],
-            6 => [null, 5],
-            7 => [null, 4],
-            8 => [null, 11],
-            9 => [null, 10],
-            10 => [null, 9],
-            11 => [null, 8],
-            12 => [null, 15],
-            13 => [null, 14],
-            14 => [null, 13],
-            15 => [null, 12]
-        ],
-        Block::IRON_TRAPDOOR => [
-            0 => [null, 3],
-            1 => [null, 2],
-            2 => [null, 1],
-            3 => [null, 0],
-            4 => [null, 7],
-            5 => [null, 6],
-            6 => [null, 5],
-            7 => [null, 4],
-            8 => [null, 11],
-            9 => [null, 10],
-            10 => [null, 9],
-            11 => [null, 8],
-            12 => [null, 15],
-            13 => [null, 14],
-            14 => [null, 13],
-            15 => [null, 12]
-        ],
-        166 => [
-            -1 => [Block::INVISIBLE_BEDROCK, null]
-        ],
-        202 => [
-            -1 => [Block::PURPUR_BLOCK, null]
-        ]
-    ];
 
     const FILESIZES = 'BKMGTP';
 
@@ -119,5 +41,50 @@ class Utils {
             $data = explode(":", $block, 3);
             return BlockFactory::get((int) $data[0], (int) ($data[1] ?? 0));
         }
+    }
+
+    public static function getPCMapping() : BlockToBlockMapping
+    {
+        $mapping = new BlockToBlockMapping();
+
+        for ($meta = 0; $meta < 16; ++$meta) {
+            $mapping->add(Block::get(Block::ACTIVATOR_RAIL, $meta), Block::get(Block::WOODEN_SLAB, $meta));
+            $mapping->add(Block::get(Block::INVISIBLE_BEDROCK, $meta), Block::get(Block::STAINED_GLASS, $meta));
+            $mapping->add(Block::get(Block::DROPPER, $meta), Block::get(Block::DOUBLE_WOODEN_SLAB, $meta));
+            $mapping->add(Block::get(Block::REPEATING_COMMAND_BLOCK, $meta), Block::get(Block::FENCE, TreeType::SPRUCE()->getMagicNumber()));
+            $mapping->add(Block::get(Block::CHAIN_COMMAND_BLOCK, $meta), Block::get(Block::FENCE, TreeType::BIRCH()->getMagicNumber()));
+            $mapping->add(Block::get(Block::HARD_GLASS_PANE, $meta), Block::get(Block::FENCE, TreeType::JUNGLE()->getMagicNumber()));
+            $mapping->add(Block::get(Block::HARD_STAINED_GLASS_PANE, $meta), Block::get(Block::FENCE, TreeType::DARK_OAK()->getMagicNumber()));
+            $mapping->add(Block::get(Block::CHEMICAL_HEAT, $meta), Block::get(Block::FENCE, TreeType::ACACIA()->getMagicNumber()));
+            $mapping->add(Block::get(Block::GLOW_STICK, $meta), Block::get(Block::BARRIER, $meta));
+        }
+
+        $mapping->add(Block::get(Block::DOUBLE_STONE_SLAB, 6), Block::get(Block::DOUBLE_STONE_SLAB, 7));
+        $mapping->add(Block::get(Block::DOUBLE_STONE_SLAB, 7), Block::get(Block::DOUBLE_STONE_SLAB, 6));
+
+        $mapping->add(Block::get(Block::STONE_SLAB, 6), Block::get(Block::STONE_SLAB, 7));
+        $mapping->add(Block::get(Block::STONE_SLAB, 7), Block::get(Block::STONE_SLAB, 6));
+        $mapping->add(Block::get(Block::STONE_SLAB, 15), Block::get(Block::STONE_SLAB, 14));
+
+        foreach ([Block::TRAPDOOR, Block::IRON_TRAPDOOR] as $blockId) {
+            $mapping->add(Block::get($blockId, 0), Block::get($blockId, 3));
+            $mapping->add(Block::get($blockId, 1), Block::get($blockId, 2));
+            $mapping->add(Block::get($blockId, 2), Block::get($blockId, 1));
+            $mapping->add(Block::get($blockId, 3), Block::get($blockId, 0));
+            $mapping->add(Block::get($blockId, 4), Block::get($blockId, 7));
+            $mapping->add(Block::get($blockId, 5), Block::get($blockId, 6));
+            $mapping->add(Block::get($blockId, 6), Block::get($blockId, 5));
+            $mapping->add(Block::get($blockId, 7), Block::get($blockId, 4));
+            $mapping->add(Block::get($blockId, 8), Block::get($blockId, 11));
+            $mapping->add(Block::get($blockId, 9), Block::get($blockId, 10));
+            $mapping->add(Block::get($blockId, 10), Block::get($blockId, 9));
+            $mapping->add(Block::get($blockId, 11), Block::get($blockId, 8));
+            $mapping->add(Block::get($blockId, 12), Block::get($blockId, 15));
+            $mapping->add(Block::get($blockId, 13), Block::get($blockId, 14));
+            $mapping->add(Block::get($blockId, 14), Block::get($blockId, 13));
+            $mapping->add(Block::get($blockId, 15), Block::get($blockId, 12));
+        }
+
+        return $mapping;
     }
 }

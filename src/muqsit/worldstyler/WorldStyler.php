@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace muqsit\worldstyler;
 
 use muqsit\worldstyler\executors\CopyCommandExecutor;
+use muqsit\worldstyler\executors\FixPCBlocksExecutor;
 use muqsit\worldstyler\executors\PasteCommandExecutor;
 use muqsit\worldstyler\executors\PosCommandExecutor;
 use muqsit\worldstyler\executors\ReplaceCommandExecutor;
@@ -35,6 +36,7 @@ class WorldStyler extends PluginBase {
 
         $commands = $this->getServer()->getCommandMap();
         $commands->getCommand("/copy")->setExecutor(new CopyCommandExecutor($this));
+        $commands->getCommand("/fixpcblocks")->setExecutor(new FixPCBlocksExecutor($this));
         $commands->getCommand("/paste")->setExecutor(new PasteCommandExecutor($this));
         $commands->getCommand("/pos1")->setExecutor(new PosCommandExecutor($this, 1));
         $commands->getCommand("/pos2")->setExecutor(new PosCommandExecutor($this, 2));

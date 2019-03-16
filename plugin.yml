@@ -20,6 +20,8 @@ commands:
     permission: worldstyler.paste
   /stack:
     permission: worldstyler.stack
+  /fixpcblocks:
+    permission: worldstyler.replace
 
 permissions:
   worldstyler:
