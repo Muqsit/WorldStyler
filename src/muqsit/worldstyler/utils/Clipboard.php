@@ -48,7 +48,7 @@ class Clipboard {
                         if ($replace_air || ($fullBlock >> 4) !== Block::AIR) {
                             $yPos = $rely + $y;
                             $iterator->moveTo($xPos, $yPos, $zPos);
-                            $iterator->currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock >> 4, $fullBlock & 0xf);
+                            $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock);
                             ++$changed;
                         }
                     }

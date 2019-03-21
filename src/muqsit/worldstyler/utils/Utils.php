@@ -26,7 +26,7 @@ class Utils {
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
                 $level->clearChunkCache($chunkX, $chunkZ);
-                foreach ($level->getChunkLoaders($chunkX, $chunkZ) as $loader) {
+                foreach ($level->getChunkListeners($chunkX, $chunkZ) as $loader) {
                     $loader->onChunkChanged($level->getChunk($chunkX, $chunkZ));
                 }
             }

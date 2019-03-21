@@ -101,8 +101,7 @@ class Cuboid {
         $minZ = $this->pos1->z;
         $maxZ = $this->pos2->z;
 
-        $blockId = $block->getId();
-        $blockMeta = $block->getMeta();
+        $fullBlock = $block->getFullId();
 
         $iterator = new BlockIterator($level);
 
@@ -110,7 +109,7 @@ class Cuboid {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
                 for ($y = $minY; $y <= $maxY; ++$y) {
                     $iterator->moveTo($x, $y, $z);
-                    $iterator->currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $blockId, $blockMeta);
+                    $iterator->currentSubChunk->setFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $fullBlock);
                 }
             }
         }
@@ -144,7 +143,7 @@ class Cuboid {
                 for ($y = $minY; $y <= $maxY; ++$y) {
                     $iterator->moveTo($x, $y, $z);
                     if (isset($mapping[$fullBlock = $iterator->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)])) {
-                        $iterator->currentSubChunk->setBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $mapping[$fullBlock][0], $mapping[$fullBlock][1]);
+                        $iterator->currentSubChunk->setFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $mapping[$fullBlock]);
                     }
                 }
             }

@@ -21,7 +21,7 @@ class BlockToBlockMapping {
         $map = [];
 
         foreach ($this->mappings as [$find, $replace]) {
-            $map[($find->getId() << 4) | $find->getMeta()] = [$replace->getId(), $replace->getMeta()];
+            $map[$find->getFullId()] = $replace->getFullId();
         }
 
         return $map;

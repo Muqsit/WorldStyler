@@ -6,6 +6,7 @@ namespace muqsit\worldstyler\schematics;
 use muqsit\worldstyler\schematics\async\AsyncSchematic;
 use muqsit\worldstyler\utils\BlockIterator;
 
+use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -77,7 +78,7 @@ class Schematic {
 
                     $yPos = $y + $rely;
                     $iterator->moveTo($xPos, $yPos, $zPos);
-                    $iterator->currentSubChunk->setBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, ord($blockIds{$index}), ord($blockDatas{$index}));
+                    $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, BlockFactory::get(ord($blockIds{$index}), ord($blockDatas{$index}))->getFullId());
                 }
             }
         }
