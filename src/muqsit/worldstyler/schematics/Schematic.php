@@ -28,7 +28,7 @@ class Schematic {
 
     public function load() : void
     {
-        $this->namedtag = (new BigEndianNBTStream())->readCompressed(file_get_contents($this->file));
+        $this->namedtag = (new BigEndianNBTStream())->readCompressed(file_get_contents($this->file))->getTag();
     }
 
     public function getWidth() : int
