@@ -72,7 +72,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
     protected function setCallable(?callable $callable) : void
     {
         if ($callable !== null) {
-            $this->storeLocal($callable);
+            $this->storeLocal("callback", $callable);
             $this->has_callable = true;
         }
     }
@@ -123,7 +123,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
         }
 
         if ($this->has_callable) {
-            $this->fetchLocal()($this->time, $this->changed);
+            $this->fetchLocal("callback")($this->time, $this->changed);
         }
     }
 }
