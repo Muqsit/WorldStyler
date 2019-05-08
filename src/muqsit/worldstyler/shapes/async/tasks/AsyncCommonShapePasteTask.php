@@ -27,13 +27,13 @@ class AsyncCommonShapePasteTask extends AsyncCommonShapeTask {
 
     public function onRun() : void
     {
-        $level = $this->getChunkManager();
+        $world = $this->getChunkManager();
         $common_shape = $this->getCommonShape();
-        $common_shape->paste($level, $this->relative_pos, $this->replace_air, [$this, "updateStatistics"]);
+        $common_shape->paste($world, $this->relative_pos, $this->replace_air, [$this, "updateStatistics"]);
 
         $caps = $common_shape->selection->getClipboardCaps();
         $min_pos = $this->start->add($caps);
         $max_pos = $min_pos->multiply($repetitions);
-        $this->saveChunks($level, $min_pos, $max_pos);
+        $this->saveChunks($world, $min_pos, $max_pos);
     }
 }

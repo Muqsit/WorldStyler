@@ -19,10 +19,10 @@ class AsyncCuboidSetTask extends AsyncCuboidTask {
 
     public function onRun() : void
     {
-        $level = $this->getChunkManager();
+        $world = $this->getChunkManager();
         $cuboid = $this->getCuboid();
 
-        $cuboid->set($level, $this->block, [$this, "updateStatistics"]);
-        $this->saveChunks($level, $cuboid->pos1, $cuboid->pos2);
+        $cuboid->set($world, $this->block, [$this, "updateStatistics"]);
+        $this->saveChunks($world, $cuboid->pos1, $cuboid->pos2);
     }
 }

@@ -43,13 +43,13 @@ class AsyncCommonShapeStackTask extends AsyncCommonShapeTask {
 
     public function onRun() : void
     {
-        $level = $this->getChunkManager();
+        $world = $this->getChunkManager();
         $common_shape = $this->getCommonShape();
-        $common_shape->stack($level, $this->start, $this->increase, $this->repetitions, $this->replace_air, [$this, "updateStatistics"]);
+        $common_shape->stack($world, $this->start, $this->increase, $this->repetitions, $this->replace_air, [$this, "updateStatistics"]);
 
         $caps = $common_shape->selection->getClipboardCaps();
         $min_pos = $this->start->add($this->increase->x * $caps->x, 0, $this->increase->z * $caps->z);
         $max_pos = $min_pos->multiply($repetitions);
-        $this->saveChunks($level, $min_pos, $max_pos);
+        $this->saveChunks($world, $min_pos, $max_pos);
     }
 }

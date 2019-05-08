@@ -37,7 +37,7 @@ class CopyCommandExecutor extends BaseCommandExecutor {
         }
 
         $cuboid->copy(
-            $sender->getLevel(),
+            $sender->getWorld(),
             $sender->asVector3(),
             function (float $time, int $changed) use ($sender) : void {
                 $sender->sendMessage(TF::GREEN . 'Copied ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's into your clipboard.');

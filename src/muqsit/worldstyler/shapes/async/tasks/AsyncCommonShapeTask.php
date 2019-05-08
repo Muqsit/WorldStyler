@@ -5,18 +5,18 @@ namespace muqsit\worldstyler\shapes\async\tasks;
 
 use muqsit\worldstyler\shapes\CommonShape;
 
-use pocketmine\level\Level;
+use pocketmine\world\World;
 
 abstract class AsyncCommonShapeTask extends AsyncChunksChangeTask {
 
     /** @var string */
     private $common_shape;
 
-    public function __construct(CommonShape $common_shape, Level $level, array $chunks, ?callable $callable = null)
+    public function __construct(CommonShape $common_shape, World $world, array $chunks, ?callable $callable = null)
     {
         $this->common_shape = serialize($common_shape);
 
-        $this->setLevel($level);
+        $this->setWorld($world);
         $this->setChunks($chunks);
         $this->setCallable($callable);
     }

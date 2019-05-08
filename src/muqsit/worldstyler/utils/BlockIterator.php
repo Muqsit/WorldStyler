@@ -3,7 +3,7 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\utils;
 
-use pocketmine\level\utils\SubChunkIteratorManager;
+use pocketmine\world\utils\SubChunkIteratorManager;
 
 class BlockIterator extends SubChunkIteratorManager {
 
@@ -14,7 +14,7 @@ class BlockIterator extends SubChunkIteratorManager {
         }
 
         if ($this->currentSubChunk === null) {
-            $this->currentSubChunk = $this->level->getChunk($this->currentX, $this->currentZ, true)->getSubChunk($y >> 4, $this->allocateEmptySubs);
+            $this->currentSubChunk = $this->world->getChunk($this->currentX, $this->currentZ, true)->getSubChunk($y >> 4, $this->allocateEmptySubs);
             return true;
         }
 

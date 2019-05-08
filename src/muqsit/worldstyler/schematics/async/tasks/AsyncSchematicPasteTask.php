@@ -6,7 +6,7 @@ namespace muqsit\worldstyler\schematics\async\tasks;
 use muqsit\worldstyler\schematics\Schematic;
 use muqsit\worldstyler\shapes\async\tasks\AsyncChunksChangeTask;
 
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
@@ -39,17 +39,17 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
 
         while ($this->chunks === null);
 
-        $level = $this->getChunkManager();
+        $world = $this->getChunkManager();
         $rel_pos = $this->relative_pos;
-        $schematic->paste($level, $rel_pos, $this->replace_pc_blocks, [$this, "updateStatistics"]);
+        $schematic->paste($world, $rel_pos, $this->replace_pc_blocks, [$this, "updateStatistics"]);
         $schematic->invalidate();
 
-        $this->saveChunks($level, $rel_pos, $rel_pos->add($width, 0, $length));
+        $this->saveChunks($world, $rel_pos, $rel_pos->add($width, 0, $length));
     }
 
     public function onProgressUpdate($progress) : void
     {
-        $level = Server::getInstance()->getLevelManager()->getLevel($this->levelId);
+        $world = Server::getInstance()->getWorldManager()->getWorld($this->worldId);
         [$width, $length] = $progress;
 
         $chunks = [];
@@ -63,7 +63,7 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
             $chunkX = ($x + $relx) >> 4;
             for ($z = 0; $z < $length; ++$z) {
                 $chunkZ = ($z + $relz) >> 4;
-                $chunks[Level::chunkHash($chunkX, $chunkZ)] = $level->getChunk($chunkX, $chunkZ, true);
+                $chunks[World::chunkHash($chunkX, $chunkZ)] = $world->getChunk($chunkX, $chunkZ, true);
             }
         }
 

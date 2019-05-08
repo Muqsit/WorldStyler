@@ -36,14 +36,14 @@ class Clipboard {
         $yCap = $caps->y;
         $zCap = $caps->z;
 
-        $iterator = new BlockIterator($level);
+        $iterator = new BlockIterator($world);
 
         for ($x = 0; $x <= $xCap; ++$x) {
             $xPos = $relx + $x;
             for ($z = 0; $z <= $zCap; ++$z) {
                 $zPos = $relz + $z;
                 for ($y = 0; $y <= $yCap; ++$y) {
-                    $fullBlock = $clipboard[Level::blockHash($x, $y, $z)] ?? null;
+                    $fullBlock = $clipboard[World::blockHash($x, $y, $z)] ?? null;
                     if ($fullBlock !== null) {
                         if ($replace_air || ($fullBlock >> 4) !== Block::AIR) {
                             $yPos = $rely + $y;

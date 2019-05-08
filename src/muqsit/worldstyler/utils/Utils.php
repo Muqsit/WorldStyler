@@ -6,7 +6,7 @@ namespace muqsit\worldstyler\utils;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\TreeType;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use pocketmine\item\ItemFactory;
 
 class Utils {
@@ -21,12 +21,12 @@ class Utils {
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . (self::FILESIZES[$factor] ?? "");
     }
 
-    public static function updateChunks(Level $level, int $minChunkX, int $maxChunkX, int $minChunkZ, int $maxChunkZ) : void
+    public static function updateChunks(World $world, int $minChunkX, int $maxChunkX, int $minChunkZ, int $maxChunkZ) : void
     {
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                foreach ($level->getChunkListeners($chunkX, $chunkZ) as $loader) {
-                    $level->setChunk($chunkX, $chunkZ, $level->getChunk($chunkX, $chunkZ), false);
+                foreach ($world->getChunkListeners($chunkX, $chunkZ) as $loader) {
+                    $world->setChunk($chunkX, $chunkZ, $world->getChunk($chunkX, $chunkZ), false);
                 }
             }
         }

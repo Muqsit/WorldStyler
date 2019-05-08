@@ -10,46 +10,46 @@ use muqsit\worldstyler\shapes\Cuboid;
 use muqsit\worldstyler\utils\BlockToBlockMapping;
 
 use pocketmine\block\Block;
-use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
+use pocketmine\world\ChunkManager;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
 
 class AsyncCuboid extends Cuboid {
 
-    public function copy(ChunkManager $level, Vector3 $relative_pos, ?callable $callable = null) : void
+    public function copy(ChunkManager $world, Vector3 $relative_pos, ?callable $callable = null) : void
     {
-        if (!($level instanceof Level)) {
-            throw new \InvalidArgumentException("\$level should be an instance of " . Level::class . " in asynchronous classes, got " . get_class($level));
+        if (!($world instanceof World)) {
+            throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
         }
 
-        $task = new AsyncCuboidCopyTask(Cuboid::fromSelection($this->selection), $level, $this->getChunks($level), $callable);
+        $task = new AsyncCuboidCopyTask(Cuboid::fromSelection($this->selection), $world, $this->getChunks($world), $callable);
         $task->setRelativePos($relative_pos);
-        $level->getServer()->getAsyncPool()->submitTask($task);
+        $world->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    public function set(ChunkManager $level, Block $block, ?callable $callable = null) : void
+    public function set(ChunkManager $world, Block $block, ?callable $callable = null) : void
     {
-        if (!($level instanceof Level)) {
-            throw new \InvalidArgumentException("\$level should be an instance of " . Level::class . " in asynchronous classes, got " . get_class($level));
+        if (!($world instanceof World)) {
+            throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
         }
 
-        $task = new AsyncCuboidSetTask(Cuboid::fromSelection($this->selection), $level, $this->getChunks($level), $callable);
+        $task = new AsyncCuboidSetTask(Cuboid::fromSelection($this->selection), $world, $this->getChunks($world), $callable);
         $task->setBlock($block);
-        $level->getServer()->getAsyncPool()->submitTask($task);
+        $world->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    public function replace(ChunkManager $level, BlockToBlockMapping $mapping, ?callable $callable = null) : void
+    public function replace(ChunkManager $world, BlockToBlockMapping $mapping, ?callable $callable = null) : void
     {
-        if (!($level instanceof Level)) {
-            throw new \InvalidArgumentException("\$level should be an instance of " . Level::class . " in asynchronous classes, got " . get_class($level));
+        if (!($world instanceof World)) {
+            throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
         }
 
-        $task = new AsyncCuboidReplaceTask(Cuboid::fromSelection($this->selection), $level, $this->getChunks($level), $callable);
+        $task = new AsyncCuboidReplaceTask(Cuboid::fromSelection($this->selection), $world, $this->getChunks($world), $callable);
         $task->setMapping($mapping);
-        $level->getServer()->getAsyncPool()->submitTask($task);
+        $world->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    private function getChunks(Level $level, bool $create = true) : array
+    private function getChunks(World $world, bool $create = true) : array
     {
         $chunks = [];
 
@@ -60,7 +60,7 @@ class AsyncCuboid extends Cuboid {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $level->getChunk($chunkX, $chunkZ, $create);
+                $chunks[] = $world->getChunk($chunkX, $chunkZ, $create);
             }
         }
 

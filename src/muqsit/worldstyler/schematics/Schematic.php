@@ -7,8 +7,8 @@ use muqsit\worldstyler\schematics\async\AsyncSchematic;
 use muqsit\worldstyler\utils\BlockIterator;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
+use pocketmine\world\ChunkManager;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
@@ -46,7 +46,7 @@ class Schematic {
         return $this->namedtag->getShort("Height");
     }
 
-    public function paste(ChunkManager $level, Vector3 $relative_pos, ?callable $callable = null) : void
+    public function paste(ChunkManager $world, Vector3 $relative_pos, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -62,7 +62,7 @@ class Schematic {
         $rely = $relative_pos->y;
         $relz = $relative_pos->z;
 
-        $iterator = new BlockIterator($level);
+        $iterator = new BlockIterator($world);
 
         $wl = $width * $length;
 
@@ -83,8 +83,8 @@ class Schematic {
             }
         }
 
-        if ($level instanceof Level) {
-            Utils::updateChunks($level, $relx >> 4, ($relx + $width - 1) >> 4, $relz >> 4, ($relz + $length - 1) >> 4);
+        if ($world instanceof World) {
+            Utils::updateChunks($world, $relx >> 4, ($relx + $width - 1) >> 4, $relz >> 4, ($relz + $length - 1) >> 4);
         }
 
         $time = microtime(true) - $time;

@@ -50,7 +50,7 @@ class SetCommandExecutor extends BaseCommandExecutor {
         }
 
         $cuboid->set(
-            $sender->getLevel(),
+            $sender->getWorld(),
             $block,
             function (float $time, int $changed) use ($sender) : void {
                 $sender->sendMessage(TF::GREEN . 'Set ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');

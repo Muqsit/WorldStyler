@@ -7,16 +7,16 @@ use muqsit\worldstyler\shapes\async\tasks\AsyncCommonShapeStackTask;
 use muqsit\worldstyler\shapes\async\tasks\AsyncCommonShapePasteTask;
 use muqsit\worldstyler\shapes\CommonShape;
 
-use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
+use pocketmine\world\ChunkManager;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
 
 class AsyncCommonShape extends CommonShape {
 
-    public function stack(ChunkManager $level, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, ?callable $callable = null) : void
+    public function stack(ChunkManager $world, Vector3 $start, Vector3 $increase, int $repetitions, bool $replace_air = true, ?callable $callable = null) : void
     {
-        if (!($level instanceof Level)) {
-            throw new \InvalidArgumentException("\$level should be an instance of " . Level::class . " in asynchronous classes, got " . get_class($level));
+        if (!($world instanceof World)) {
+            throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
         }
 
         $chunks = [];
@@ -29,22 +29,22 @@ class AsyncCommonShape extends CommonShape {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $level->getChunk($chunkX, $chunkZ, true);
+                $chunks[] = $world->getChunk($chunkX, $chunkZ, true);
             }
         }
 
-        $task = new AsyncCommonShapeStackTask(CommonShape::fromSelection($this->selection), $level, $chunks, $callable);
+        $task = new AsyncCommonShapeStackTask(CommonShape::fromSelection($this->selection), $world, $chunks, $callable);
         $task->startFrom($start);
         $task->increaseBy($increase);
         $task->repeat($repetitions);
         $task->replaceAir($replace_air);
-        $level->getServer()->getAsyncPool()->submitTask($task);
+        $world->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
+    public function paste(ChunkManager $world, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
     {
-        if (!($level instanceof Level)) {
-            throw new \InvalidArgumentException("\$level should be an instance of " . Level::class . " in asynchronous classes, got " . get_class($level));
+        if (!($world instanceof World)) {
+            throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
         }
 
         $chunks = [];
@@ -57,13 +57,13 @@ class AsyncCommonShape extends CommonShape {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $level->getChunk($chunkX, $chunkZ, true);
+                $chunks[] = $world->getChunk($chunkX, $chunkZ, true);
             }
         }
 
-        $task = new AsyncCommonShapePasteTask(CommonShape::fromSelection($this->selection), $level, $chunks, $callable);
+        $task = new AsyncCommonShapePasteTask(CommonShape::fromSelection($this->selection), $world, $chunks, $callable);
         $task->setRelativePos($relative_pos);
         $task->replaceAir($replace_air);
-        $level->getServer()->getAsyncPool()->submitTask($task);
+        $world->getServer()->getAsyncPool()->submitTask($task);
     }
 }

@@ -57,7 +57,7 @@ class ReplaceCommandExecutor extends BaseCommandExecutor {
         }
 
         $cuboid->replace(
-            $sender->getLevel(),
+            $sender->getWorld(),
             $mapping,
             function (float $time, int $changed) use ($sender) : void {
                 $sender->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');

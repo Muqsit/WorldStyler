@@ -3,9 +3,9 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
-use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
-use pocketmine\level\SimpleChunkManager;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
+use pocketmine\world\SimpleChunkManager;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -23,7 +23,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
     }
 
     /** @var int */
-    protected $levelId;
+    protected $worldId;
 
     /** @var int */
     protected $seed;
@@ -46,11 +46,11 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
     /** @var bool */
     private $has_callable = false;
 
-    public function setLevel(Level $level) : void
+    public function setWorld(World $world) : void
     {
-        $this->levelId = $level->getId();
-        $this->seed = $level->getSeed();
-        $this->worldHeight = $level->getWorldHeight();
+        $this->worldId = $world->getId();
+        $this->seed = $world->getSeed();
+        $this->worldHeight = $world->getWorldHeight();
     }
 
     public function updateStatistics(float $time, int $changed) : void
@@ -63,7 +63,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
     {
         $serialized_chunks = [];
         foreach ($chunks as $chunk) {
-            $serialized_chunks[Level::chunkHash($chunk->getX(), $chunk->getZ())] = $chunk->fastSerialize();
+            $serialized_chunks[World::chunkHash($chunk->getX(), $chunk->getZ())] = $chunk->fastSerialize();
         }
 
         $this->chunks = self::serialize($serialized_chunks);
@@ -82,14 +82,14 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
         $manager = new SimpleChunkManager($this->seed, $this->worldHeight);
 
         foreach (self::unserialize($this->chunks) as $hash => $serialized_chunk) {
-            Level::getXZ($hash, $chunkX, $chunkZ);
+            World::getXZ($hash, $chunkX, $chunkZ);
             $manager->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($serialized_chunk));
         }
 
         return $manager;
     }
 
-    public function saveChunks(SimpleChunkManager $level, Vector3 $pos1, Vector3 $pos2) : void
+    public function saveChunks(SimpleChunkManager $world, Vector3 $pos1, Vector3 $pos2) : void
     {
         if (!$this->set_chunks) {
             $this->chunks = null;
@@ -105,7 +105,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[Level::chunkHash($chunkX, $chunkZ)] = $level->getChunk($chunkX, $chunkZ)->fastSerialize();
+                $chunks[World::chunkHash($chunkX, $chunkZ)] = $world->getChunk($chunkX, $chunkZ)->fastSerialize();
             }
         }
 
@@ -115,10 +115,10 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
     public function onCompletion() : void
     {
         if ($this->set_chunks) {
-            $level = Server::getInstance()->getLevelManager()->getLevel($this->levelId);
+            $world = Server::getInstance()->getWorldManager()->getWorld($this->worldId);
             foreach (self::unserialize($this->chunks) as $hash => $chunk) {
-                Level::getXZ($hash, $chunkX, $chunkZ);
-                $level->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($chunk), false);
+                World::getXZ($hash, $chunkX, $chunkZ);
+                $world->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($chunk), false);
             }
         }
 

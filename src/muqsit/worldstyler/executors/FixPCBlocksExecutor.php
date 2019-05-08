@@ -38,7 +38,7 @@ class FixPCBlocksExecutor extends BaseCommandExecutor {
         }
 
         $cuboid->replace(
-            $sender->getLevel(),
+            $sender->getWorld(),
             Utils::getPCMapping(),
             function (float $time, int $changed) use ($sender) : void {
                 $sender->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');

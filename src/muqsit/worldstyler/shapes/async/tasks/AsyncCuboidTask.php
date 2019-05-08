@@ -5,18 +5,18 @@ namespace muqsit\worldstyler\shapes\async\tasks;
 
 use muqsit\worldstyler\shapes\Cuboid;
 
-use pocketmine\level\Level;
+use pocketmine\world\World;
 
 abstract class AsyncCuboidTask extends AsyncChunksChangeTask {
 
     /** @var string */
     private $cuboid;
 
-    public function __construct(Cuboid $cuboid, Level $level, array $chunks, ?callable $callable = null)
+    public function __construct(Cuboid $cuboid, World $world, array $chunks, ?callable $callable = null)
     {
         $this->cuboid = serialize($cuboid);
 
-        $this->setLevel($level);
+        $this->setWorld($world);
         $this->setChunks($chunks);
         $this->setCallable($callable);
     }

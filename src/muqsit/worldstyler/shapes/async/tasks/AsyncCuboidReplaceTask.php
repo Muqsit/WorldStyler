@@ -20,10 +20,10 @@ class AsyncCuboidReplaceTask extends AsyncCuboidTask {
 
     public function onRun() : void
     {
-        $level = $this->getChunkManager();
+        $world = $this->getChunkManager();
         $cuboid = $this->getCuboid();
 
-        $cuboid->replace($level, $this->mapping, [$this, "updateStatistics"]);
-        $this->saveChunks($level, $cuboid->pos1, $cuboid->pos2);
+        $cuboid->replace($world, $this->mapping, [$this, "updateStatistics"]);
+        $this->saveChunks($world, $cuboid->pos1, $cuboid->pos2);
     }
 }

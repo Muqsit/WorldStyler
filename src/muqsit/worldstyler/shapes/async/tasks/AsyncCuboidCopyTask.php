@@ -32,11 +32,11 @@ class AsyncCuboidCopyTask extends AsyncCuboidTask {
 
     public function onRun() : void
     {
-        $level = $this->getChunkManager();
+        $world = $this->getChunkManager();
         $cuboid = $this->getCuboid();
 
-        $cuboid->copy($level, $this->relative_pos, [$this, "updateStatistics"]);
-        $this->saveChunks($level, $cuboid->pos1, $cuboid->pos2);
+        $cuboid->copy($world, $this->relative_pos, [$this, "updateStatistics"]);
+        $this->saveChunks($world, $cuboid->pos1, $cuboid->pos2);
 
         $this->clipboard = self::serialize($cuboid->selection->getClipboard());
         $this->relative_pos = $cuboid->selection->getClipboardRelativePos();

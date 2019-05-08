@@ -10,8 +10,8 @@ use muqsit\worldstyler\utils\BlockToBlockMapping;
 use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\block\Block;
-use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
+use pocketmine\world\ChunkManager;
+use pocketmine\world\World;
 use pocketmine\math\Vector3;
 
 class Cuboid {
@@ -52,7 +52,7 @@ class Cuboid {
         $this->selection = $selection;
     }
 
-    public function copy(ChunkManager $level, Vector3 $relative_pos, ?callable $callable = null) : void
+    public function copy(ChunkManager $world, Vector3 $relative_pos, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -68,7 +68,7 @@ class Cuboid {
         $minZ = $this->pos1->z;
 
         $blocks = [];
-        $iterator = new BlockIterator($level);
+        $iterator = new BlockIterator($world);
 
         for ($x = 0; $x <= $xCap; ++$x) {
             $ax = $minX + $x;
@@ -77,7 +77,7 @@ class Cuboid {
                 for ($y = 0; $y <= $yCap; ++$y) {
                     $ay = $minY + $y;
                     $iterator->moveTo($ax, $ay, $az);
-                    $blocks[Level::blockHash($x, $y, $z)] = $iterator->currentSubChunk->getFullBlock($ax & 0x0f, $ay & 0x0f, $az & 0x0f);
+                    $blocks[World::blockHash($x, $y, $z)] = $iterator->currentSubChunk->getFullBlock($ax & 0x0f, $ay & 0x0f, $az & 0x0f);
                 }
             }
         }
@@ -90,7 +90,7 @@ class Cuboid {
         }
     }
 
-    public function set(ChunkManager $level, Block $block, ?callable $callable = null) : void
+    public function set(ChunkManager $world, Block $block, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -103,7 +103,7 @@ class Cuboid {
 
         $fullBlock = $block->getFullId();
 
-        $iterator = new BlockIterator($level);
+        $iterator = new BlockIterator($world);
 
         for ($x = $minX; $x <= $maxX; ++$x) {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
@@ -114,8 +114,8 @@ class Cuboid {
             }
         }
 
-        if ($level instanceof Level) {
-            Utils::updateChunks($level, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+        if ($world instanceof World) {
+            Utils::updateChunks($world, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
         }
 
         $time = microtime(true) - $time;
@@ -124,7 +124,7 @@ class Cuboid {
         }
     }
 
-    public function replace(ChunkManager $level, BlockToBlockMapping $mapping, ?callable $callable = null) : void
+    public function replace(ChunkManager $world, BlockToBlockMapping $mapping, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -136,7 +136,7 @@ class Cuboid {
         $maxZ = $this->pos2->z;
 
         $mapping = $mapping->toFullBlock();
-        $iterator = new BlockIterator($level);
+        $iterator = new BlockIterator($world);
 
         for ($x = $minX; $x <= $maxX; ++$x) {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
@@ -149,8 +149,8 @@ class Cuboid {
             }
         }
 
-        if ($level instanceof Level) {
-            Utils::updateChunks($level, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+        if ($world instanceof World) {
+            Utils::updateChunks($world, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
         }
 
         $time = microtime(true) - $time;

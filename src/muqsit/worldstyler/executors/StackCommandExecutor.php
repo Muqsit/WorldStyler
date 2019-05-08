@@ -49,7 +49,7 @@ class StackCommandExecutor extends BaseCommandExecutor {
         $sender->sendMessage(TF::YELLOW . 'Stacking (Multiplying by ' . $increase->__toString() . ')...');
 
         $common_shape->stack(
-            $sender->getLevel(),
+            $sender->getWorld(),
             $sender->asVector3(),
             $increase,
             $repititions,

@@ -38,7 +38,7 @@ class PasteCommandExecutor extends BaseCommandExecutor {
         }
 
         $common_shape->paste(
-            $sender->getLevel(),
+            $sender->getWorld(),
             $sender->asVector3(),
             $air,
             function (float $time, int $changed) use ($sender, $air) : void {
