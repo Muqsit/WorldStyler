@@ -12,7 +12,7 @@ use muqsit\worldstyler\executors\SchemCommandExecutor;
 use muqsit\worldstyler\executors\SetCommandExecutor;
 use muqsit\worldstyler\executors\StackCommandExecutor;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class WorldStyler extends PluginBase {

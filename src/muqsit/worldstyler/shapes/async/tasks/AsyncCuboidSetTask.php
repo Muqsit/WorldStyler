@@ -9,12 +9,12 @@ use pocketmine\block\Block;
 
 class AsyncCuboidSetTask extends AsyncCuboidTask {
 
-    /** @var Block */
-    private $block;
+    /** @var int */
+    private $blockFullId;
 
-    public function setBlock(Block $block) : void
+    public function setBlock(int $fullId) : void
     {
-        $this->block = $block;
+        $this->blockFullId = $fullId;
     }
 
     public function onRun() : void
@@ -22,7 +22,7 @@ class AsyncCuboidSetTask extends AsyncCuboidTask {
         $world = $this->getChunkManager();
         $cuboid = $this->getCuboid();
 
-        $cuboid->set($world, $this->block, [$this, "updateStatistics"]);
+        $cuboid->set($world, $this->blockFullId, [$this, "updateStatistics"]);
         $this->saveChunks($world, $cuboid->pos1, $cuboid->pos2);
     }
 }

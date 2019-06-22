@@ -27,14 +27,14 @@ class AsyncCuboid extends Cuboid {
         $world->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    public function set(ChunkManager $world, Block $block, ?callable $callable = null) : void
+    public function set(ChunkManager $world, int $fullId, ?callable $callable = null) : void
     {
         if (!($world instanceof World)) {
             throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
         }
 
         $task = new AsyncCuboidSetTask(Cuboid::fromSelection($this->selection), $world, $this->getChunks($world), $callable);
-        $task->setBlock($block);
+        $task->setBlock($fullId);
         $world->getServer()->getAsyncPool()->submitTask($task);
     }
 

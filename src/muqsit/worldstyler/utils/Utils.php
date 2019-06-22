@@ -25,9 +25,9 @@ class Utils {
     {
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                foreach ($world->getChunkListeners($chunkX, $chunkZ) as $loader) {
-                    $world->setChunk($chunkX, $chunkZ, $world->getChunk($chunkX, $chunkZ), false);
-                }
+                $chunk = $world->getChunk($chunkX, $chunkZ);
+                $chunk->setChanged(true);
+                $world->setChunk($chunkX, $chunkZ, $chunk, false);
             }
         }
     }

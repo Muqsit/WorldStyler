@@ -90,7 +90,7 @@ class Cuboid {
         }
     }
 
-    public function set(ChunkManager $world, Block $block, ?callable $callable = null) : void
+    public function set(ChunkManager $world, int $fullId, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -101,15 +101,13 @@ class Cuboid {
         $minZ = $this->pos1->z;
         $maxZ = $this->pos2->z;
 
-        $fullBlock = $block->getFullId();
-
         $iterator = new BlockIterator($world);
 
         for ($x = $minX; $x <= $maxX; ++$x) {
             for ($z = $minZ; $z <= $maxZ; ++$z) {
                 for ($y = $minY; $y <= $maxY; ++$y) {
                     $iterator->moveTo($x, $y, $z);
-                    $iterator->currentSubChunk->setFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $fullBlock);
+                    $iterator->currentSubChunk->setFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f, $fullId);
                 }
             }
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\World;
 use pocketmine\world\SimpleChunkManager;
 use pocketmine\math\Vector3;
@@ -63,7 +64,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
     {
         $serialized_chunks = [];
         foreach ($chunks as $chunk) {
-            $serialized_chunks[World::chunkHash($chunk->getX(), $chunk->getZ())] = $chunk->fastSerialize();
+            $serialized_chunks[World::chunkHash($chunk->getX(), $chunk->getZ())] = FastChunkSerializer::serialize($chunk);
         }
 
         $this->chunks = self::serialize($serialized_chunks);
@@ -83,7 +84,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
 
         foreach (self::unserialize($this->chunks) as $hash => $serialized_chunk) {
             World::getXZ($hash, $chunkX, $chunkZ);
-            $manager->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($serialized_chunk));
+            $manager->setChunk($chunkX, $chunkZ, FastChunkSerializer::deserialize($serialized_chunk));
         }
 
         return $manager;
@@ -105,7 +106,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[World::chunkHash($chunkX, $chunkZ)] = $world->getChunk($chunkX, $chunkZ)->fastSerialize();
+                $chunks[World::chunkHash($chunkX, $chunkZ)] = FastChunkSerializer::serialize($world->getChunk($chunkX, $chunkZ));
             }
         }
 
@@ -118,7 +119,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
             $world = Server::getInstance()->getWorldManager()->getWorld($this->worldId);
             foreach (self::unserialize($this->chunks) as $hash => $chunk) {
                 World::getXZ($hash, $chunkX, $chunkZ);
-                $world->setChunk($chunkX, $chunkZ, Chunk::fastDeserialize($chunk), false);
+                $world->setChunk($chunkX, $chunkZ, FastChunkSerializer::deserialize($chunk), false);
             }
         }
 
