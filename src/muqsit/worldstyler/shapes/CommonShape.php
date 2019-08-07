@@ -8,7 +8,7 @@ use muqsit\worldstyler\Selection;
 use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\Utils;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
@@ -60,7 +60,7 @@ class CommonShape {
         }
     }
 
-    public function paste(ChunkManager $world, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
+    public function paste(ChunkManager $world, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable = null) : void
     {
         $changed = 0;
         $time = microtime(true);
@@ -86,7 +86,7 @@ class CommonShape {
                 for ($y = 0; $y <= $yCap; ++$y) {
                     $fullBlock = $clipboard[World::blockHash($x, $y, $z)] ?? null;
                     if ($fullBlock !== null) {
-                        if ($replace_air || ($fullBlock >> 4) !== Block::AIR) {
+                        if ($replace_air || ($fullBlock >> 4) !== BlockLegacyIds::AIR) {
                             $yPos = $rely + $y;
                             $iterator->moveTo($xPos, $yPos, $zPos);
                             $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock);
