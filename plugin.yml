@@ -1,7 +1,7 @@
 name: WorldStyler
 main: muqsit\worldstyler\WorldStyler
 api: 3.0.0
-version: 1.0
+version: 1.1
 
 commands:
   /pos1:

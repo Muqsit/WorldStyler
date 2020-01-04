@@ -16,7 +16,7 @@ use pocketmine\plugin\PluginBase;
 
 class WorldStyler extends PluginBase {
 
-    /** @var PlayerSelection[] */
+    /** @var Selection[] */
     private $selections = [];
 
     public function onEnable() : void

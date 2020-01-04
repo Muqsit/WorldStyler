@@ -3,9 +3,8 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
-use muqsit\worldstyler\shapes\Cuboid;
+use muqsit\worldstyler\Selection;
 
-use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
@@ -22,7 +21,7 @@ class AsyncCuboidCopyTask extends AsyncCuboidTask {
     /** @var Vector3 */
     private $relative_pos;
 
-    /** @var Vector3 */
+    /** @var int */
     private $selectionId;
 
     public function setRelativePos(Vector3 $relative_pos) : void
@@ -48,6 +47,7 @@ class AsyncCuboidCopyTask extends AsyncCuboidTask {
     {
         parent::onCompletion($server);
 
+        /** @var Selection $selection */
         $selection = $server->getPluginManager()->getPlugin("WorldStyler")->getSelection($this->selectionId);
         if ($selection !== null) {
             $selection->setClipboard(self::unserialize($this->clipboard), $this->relative_pos, self::unserialize($this->clipboard_caps));

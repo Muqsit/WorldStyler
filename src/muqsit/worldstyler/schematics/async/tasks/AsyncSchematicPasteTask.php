@@ -21,7 +21,7 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
     /** @var bool */
     private $replace_pc_blocks;
 
-    public function __construct(Vector3 $relative_pos, string $file, bool $replace_pc_blocks = true, ?callable $callable)
+    public function __construct(Vector3 $relative_pos, string $file, bool $replace_pc_blocks = true, ?callable $callable = null)
     {
         $this->relative_pos = $relative_pos;
         $this->file = $file;
