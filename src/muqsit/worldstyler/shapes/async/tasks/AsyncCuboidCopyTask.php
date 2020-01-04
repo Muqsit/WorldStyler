@@ -3,9 +3,8 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
-use muqsit\worldstyler\shapes\Cuboid;
+use muqsit\worldstyler\Selection;
 
-use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
