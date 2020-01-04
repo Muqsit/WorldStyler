@@ -14,7 +14,7 @@ class BlockIterator extends SubChunkIteratorManager {
         }
 
         if ($this->currentSubChunk === null) {
-            $this->currentSubChunk = $this->level->getChunk($this->currentX, $this->currentZ, true)->getSubChunk($y >> 4, $this->allocateEmptySubs);
+            $this->currentSubChunk = $this->level->getChunk($this->currentX, $this->currentZ)->getSubChunk($y >> 4, $this->allocateEmptySubs);
             return true;
         }
 

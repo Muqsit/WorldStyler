@@ -60,7 +60,7 @@ class CommonShape {
         }
     }
 
-    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
+    public function paste(ChunkManager $level, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable = null) : void
     {
         $changed = 0;
         $time = microtime(true);
