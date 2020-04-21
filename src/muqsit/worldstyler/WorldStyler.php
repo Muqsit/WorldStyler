@@ -18,9 +18,13 @@ class WorldStyler extends PluginBase {
 
     /** @var Selection[] */
     private $selections = [];
+    
+    /** @var self|null */
+    private static $instance = null;
 
     public function onEnable() : void
     {
+        self::$instance = $this;
         $this->getServer()->getPluginManager()->registerEvents(new EventHandler($this), $this);
 
         if (!is_dir($this->getDataFolder())) {
@@ -42,6 +46,10 @@ class WorldStyler extends PluginBase {
         $commands->getCommand("/schem")->setExecutor(new SchemCommandExecutor($this));
         $commands->getCommand("/set")->setExecutor(new SetCommandExecutor($this));
         $commands->getCommand("/stack")->setExecutor(new StackCommandExecutor($this));
+    }
+    public static function getInstance() :?WorldStyler
+    {
+        return self::$instance;
     }
 
     public function getPlayerSelection(Player $player) : ?Selection
