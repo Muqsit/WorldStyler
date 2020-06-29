@@ -9,7 +9,6 @@ use muqsit\worldstyler\shapes\async\tasks\AsyncCuboidSetTask;
 use muqsit\worldstyler\shapes\Cuboid;
 use muqsit\worldstyler\utils\BlockToBlockMapping;
 
-use pocketmine\block\Block;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;

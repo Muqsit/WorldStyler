@@ -6,11 +6,12 @@ namespace muqsit\worldstyler\schematics;
 use muqsit\worldstyler\schematics\async\AsyncSchematic;
 use muqsit\worldstyler\utils\BlockIterator;
 
+use muqsit\worldstyler\utils\Utils;
 use pocketmine\block\BlockFactory;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\BigEndianNBTStream;
+use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\tag\CompoundTag;
 
 class Schematic {
@@ -28,7 +29,7 @@ class Schematic {
 
     public function load() : void
     {
-        $this->namedtag = (new BigEndianNBTStream())->readCompressed(file_get_contents($this->file))->getTag();
+        $this->namedtag = (new BigEndianNbtSerializer())->read(file_get_contents($this->file))->getTag();
     }
 
     public function getWidth() : int
@@ -46,7 +47,7 @@ class Schematic {
         return $this->namedtag->getShort("Height");
     }
 
-    public function paste(ChunkManager $world, Vector3 $relative_pos, ?callable $callable = null) : void
+    public function paste(ChunkManager $world, Vector3 $relative_pos, bool $replace_pc_blocks = true, ?callable $callable = null) : void
     {
         $time = microtime(true);
 
@@ -76,9 +77,20 @@ class Schematic {
                 for ($y = 0; $y < $height; ++$y) {
                     $index = $y * $wl + $zwx;
 
+                    $id = ord($blockIds{$index});
+                    $damage = ord($blockDatas{$index});
+                    $block = BlockFactory::getInstance()->get($id, $damage);
+                    $fullId = $block->getFullId();
+
+                    if($replace_pc_blocks){
+                        $blocks = Utils::getPCMapping();
+                        if(isset($blocks->toFullBlock()[$fullId])){
+                            $fullId = $blocks->toFullBlock()[$fullId];
+                        }
+                    }
                     $yPos = $y + $rely;
                     $iterator->moveTo($xPos, $yPos, $zPos);
-                    $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, BlockFactory::get(ord($blockIds{$index}), ord($blockDatas{$index}))->getFullId());
+                    $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullId);
                 }
             }
         }

@@ -8,6 +8,7 @@ use muqsit\worldstyler\shapes\CommonShape;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat as TF;
 
 class StackCommandExecutor extends BaseCommandExecutor {
@@ -19,6 +20,10 @@ class StackCommandExecutor extends BaseCommandExecutor {
 
     public function onCommandExecute(CommandSender $sender, Command $command, string $label, array $args, array $opts) : bool
     {
+        if(!$sender instanceof Player){
+            $sender->sendMessage(TF::RED . "You cannot run this command.");
+            return false;
+        }
         $selection = $this->plugin->getPlayerSelection($sender);
 
         if (!$selection->hasClipboard()) {
@@ -35,7 +40,7 @@ class StackCommandExecutor extends BaseCommandExecutor {
 
         $common_shape = CommonShape::fromSelection($selection);
         $force_async = $opts["async"] ?? null;
-        if ($force_async !== null ? ($force_async = $this->getBool($force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false)) {
+        if ($force_async !== null ? ($force_async = $this->getBool((string)$force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false)) {
             $cuboid = $common_shape->async();
         }
 
@@ -50,7 +55,7 @@ class StackCommandExecutor extends BaseCommandExecutor {
 
         $common_shape->stack(
             $sender->getWorld(),
-            $sender->asVector3(),
+            $sender->getPosition(),
             $increase,
             $repititions,
             $air,

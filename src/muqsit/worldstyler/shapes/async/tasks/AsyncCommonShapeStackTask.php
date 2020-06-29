@@ -3,8 +3,6 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
-use muqsit\worldstyler\shapes\CommonShape;
-
 use pocketmine\math\Vector3;
 
 class AsyncCommonShapeStackTask extends AsyncCommonShapeTask {
@@ -49,7 +47,7 @@ class AsyncCommonShapeStackTask extends AsyncCommonShapeTask {
 
         $caps = $common_shape->selection->getClipboardCaps();
         $min_pos = $this->start->add($this->increase->x * $caps->x, 0, $this->increase->z * $caps->z);
-        $max_pos = $min_pos->multiply($repetitions);
+        $max_pos = $min_pos->multiply($this->repetitions);
         $this->saveChunks($world, $min_pos, $max_pos);
     }
 }

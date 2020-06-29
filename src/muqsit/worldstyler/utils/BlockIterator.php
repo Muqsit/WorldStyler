@@ -7,14 +7,14 @@ use pocketmine\world\utils\SubChunkIteratorManager;
 
 class BlockIterator extends SubChunkIteratorManager {
 
-    public function moveTo(int $x, int $y, int $z) : bool
+    public function moveTo(int $x, int $y, int $z, bool $create = true) : bool
     {
-        if (parent::moveTo($x, $y, $z)) {
+        if (parent::moveTo($x, $y, $z, $create)) {
             return true;
         }
 
         if ($this->currentSubChunk === null) {
-            $this->currentSubChunk = $this->world->getChunk($this->currentX, $this->currentZ, true)->getSubChunk($y >> 4, $this->allocateEmptySubs);
+            $this->currentSubChunk = $this->world->getChunk($this->currentX, $this->currentZ, true)->getSubChunk($y >> 4);
             return true;
         }
 
