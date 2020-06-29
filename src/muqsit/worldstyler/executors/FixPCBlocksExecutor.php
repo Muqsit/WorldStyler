@@ -4,11 +4,13 @@ declare(strict_types=1);
 namespace muqsit\worldstyler\executors;
 
 use muqsit\worldstyler\shapes\Cuboid;
-use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextFormat as TF;
+use Prison\level\LevelUtils;
 
 class FixPCBlocksExecutor extends BaseCommandExecutor {
 
@@ -19,6 +21,10 @@ class FixPCBlocksExecutor extends BaseCommandExecutor {
 
     public function onCommandExecute(CommandSender $sender, Command $command, string $label, array $args, array $opts) : bool
     {
+        if(!$sender instanceof Player){
+            $sender->sendMessage(TextFormat::RED . "This command is not for console.");
+            return false;
+        }
         $selection = $this->plugin->getPlayerSelection($sender);
 
         $count = $selection->getPositionCount();
@@ -29,7 +35,7 @@ class FixPCBlocksExecutor extends BaseCommandExecutor {
 
         $cuboid = Cuboid::fromSelection($selection);
         $force_async = $opts["async"] ?? null;
-        if ($force_async !== null ? ($force_async = $this->getBool($force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false)) {
+        if ($force_async !== null ? ($force_async = $this->getBool((string)$force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false)) {
             $cuboid = $cuboid->async();
         }
 
@@ -39,7 +45,7 @@ class FixPCBlocksExecutor extends BaseCommandExecutor {
 
         $cuboid->replace(
             $sender->getWorld(),
-            Utils::getPCMapping(),
+            LevelUtils::getPCMapping(),
             function (float $time, int $changed) use ($sender) : void {
                 $sender->sendMessage(TF::GREEN . 'Replaced ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's');
             }

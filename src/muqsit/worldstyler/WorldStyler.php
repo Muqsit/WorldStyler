@@ -5,6 +5,7 @@ namespace muqsit\worldstyler;
 
 use muqsit\worldstyler\executors\CopyCommandExecutor;
 use muqsit\worldstyler\executors\FixPCBlocksExecutor;
+use muqsit\worldstyler\executors\NiceStyle;
 use muqsit\worldstyler\executors\PasteCommandExecutor;
 use muqsit\worldstyler\executors\PosCommandExecutor;
 use muqsit\worldstyler\executors\ReplaceCommandExecutor;
@@ -17,7 +18,7 @@ use pocketmine\plugin\PluginBase;
 
 class WorldStyler extends PluginBase {
 
-    /** @var PlayerSelection[] */
+    /** @var Selection[] */
     private $selections = [];
 
     public function onEnable() : void
@@ -44,6 +45,7 @@ class WorldStyler extends PluginBase {
         $commands->getCommand("/schem")->setExecutor(new SchemCommandExecutor($this));
         $commands->getCommand("/set")->setExecutor(new SetCommandExecutor($this));
         $commands->getCommand("/stack")->setExecutor(new StackCommandExecutor($this));
+        $commands->getCommand("/nice")->setExecutor(new NiceStyle($this));
     }
 
     public function getPlayerSelection(Player $player) : ?Selection

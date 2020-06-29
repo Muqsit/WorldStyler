@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace muqsit\worldstyler\schematics;
 
 use muqsit\worldstyler\schematics\async\AsyncSchematic;
-use muqsit\worldstyler\utils\BlockIterator;
-
 use pocketmine\block\BlockFactory;
+use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use Prison\level\BlockIterator;
+use Prison\level\LevelUtils;
 
 class Schematic {
 
@@ -28,7 +28,7 @@ class Schematic {
 
     public function load() : void
     {
-        $this->namedtag = (new BigEndianNBTStream())->readCompressed(file_get_contents($this->file))->getTag();
+        $this->namedtag = (new BigEndianNbtSerializer())->readCompressed(file_get_contents($this->file))->getTag();
     }
 
     public function getWidth() : int
@@ -78,13 +78,13 @@ class Schematic {
 
                     $yPos = $y + $rely;
                     $iterator->moveTo($xPos, $yPos, $zPos);
-                    $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, BlockFactory::get(ord($blockIds{$index}), ord($blockDatas{$index}))->getFullId());
+                    $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, BlockFactory::getInstance()->get(ord($blockIds{$index}), ord($blockDatas{$index}))->getFullId());
                 }
             }
         }
 
         if ($world instanceof World) {
-            Utils::updateChunks($world, $relx >> 4, ($relx + $width - 1) >> 4, $relz >> 4, ($relz + $length - 1) >> 4);
+            LevelUtils::updateChunks($world, $relx >> 4, ($relx + $width - 1) >> 4, $relz >> 4, ($relz + $length - 1) >> 4);
         }
 
         $time = microtime(true) - $time;

@@ -5,14 +5,13 @@ namespace muqsit\worldstyler\shapes;
 
 use muqsit\worldstyler\Selection;
 use muqsit\worldstyler\shapes\async\AsyncCuboid;
-use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\BlockToBlockMapping;
-use muqsit\worldstyler\utils\Utils;
 
-use pocketmine\block\Block;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
+use Prison\level\BlockIterator;
+use Prison\level\LevelUtils;
 
 class Cuboid {
 
@@ -56,9 +55,9 @@ class Cuboid {
     {
         $time = microtime(true);
 
-        $s_pos = $this->pos1->subtract($relative_pos->floor());
+        $s_pos = $this->pos1->subtract($relative_pos->floor()->x, $relative_pos->floor()->y, $relative_pos->floor()->z);
 
-        $cap = $this->pos2->subtract($this->pos1);
+        $cap = $this->pos2->subtract($this->pos1->x, $this->pos1->y, $this->pos1->z);
         $xCap = $cap->x;
         $yCap = $cap->y;
         $zCap = $cap->z;
@@ -113,7 +112,7 @@ class Cuboid {
         }
 
         if ($world instanceof World) {
-            Utils::updateChunks($world, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+            LevelUtils::updateChunks($world, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
         }
 
         $time = microtime(true) - $time;
@@ -148,7 +147,7 @@ class Cuboid {
         }
 
         if ($world instanceof World) {
-            Utils::updateChunks($world, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
+            LevelUtils::updateChunks($world, $minX >> 4, $maxX >> 4, $minZ >> 4, $maxZ >> 4);
         }
 
         $time = microtime(true) - $time;

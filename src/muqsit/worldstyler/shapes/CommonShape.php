@@ -5,13 +5,13 @@ namespace muqsit\worldstyler\shapes;
 
 use muqsit\worldstyler\shapes\async\AsyncCommonShape;
 use muqsit\worldstyler\Selection;
-use muqsit\worldstyler\utils\BlockIterator;
-use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
+use Prison\level\BlockIterator;
+use Prison\level\LevelUtils;
 
 class CommonShape {
 
@@ -65,7 +65,7 @@ class CommonShape {
         $changed = 0;
         $time = microtime(true);
 
-        $relative_pos = $relative_pos->floor()->add($this->selection->getClipboardRelativePos());
+        $relative_pos = $relative_pos->floor()->add($this->selection->getClipboardRelativePos()->x, $this->selection->getClipboardRelativePos()->y, $this->selection->getClipboardRelativePos()->z);
         $relx = $relative_pos->x;
         $rely = $relative_pos->y;
         $relz = $relative_pos->z;
@@ -89,7 +89,7 @@ class CommonShape {
                         if ($replace_air || ($fullBlock >> 4) !== BlockLegacyIds::AIR) {
                             $yPos = $rely + $y;
                             $iterator->moveTo($xPos, $yPos, $zPos);
-                            $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock);
+                            $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, (int)$fullBlock);
                             ++$changed;
                         }
                     }
@@ -98,7 +98,7 @@ class CommonShape {
         }
 
         if ($world instanceof World) {
-            Utils::updateChunks($world, $relx >> 4, ($relx + $xCap) >> 4, $relz >> 4, ($relz + $zCap) >> 4);
+            LevelUtils::updateChunks($world, $relx >> 4, ($relx + $xCap) >> 4, $relz >> 4, ($relz + $zCap) >> 4);
         }
 
         $time = microtime(true) - $time;

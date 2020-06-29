@@ -3,7 +3,6 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
-use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\World;
 use pocketmine\world\SimpleChunkManager;
@@ -80,7 +79,7 @@ abstract class AsyncChunksChangeTask extends AsyncTask {
 
     protected function getChunkManager() : SimpleChunkManager
     {
-        $manager = new SimpleChunkManager($this->seed, $this->worldHeight);
+        $manager = new SimpleChunkManager($this->worldHeight);
 
         foreach (self::unserialize($this->chunks) as $hash => $serialized_chunk) {
             World::getXZ($hash, $chunkX, $chunkZ);

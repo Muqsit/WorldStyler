@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace muqsit\worldstyler\executors;
 
 use muqsit\worldstyler\schematics\Schematic;
-use muqsit\worldstyler\utils\Utils;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
+use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextFormat as TF;
+use Prison\level\LevelUtils;
 
 class SchemCommandExecutor extends BaseCommandExecutor {
 
@@ -38,7 +40,7 @@ class SchemCommandExecutor extends BaseCommandExecutor {
             foreach (scandir($dir) as $file) {
                 $expl = explode(".", $file, 2);
                 if (count($expl) === 2 && $expl[1] === 'schematic') {
-                    $sender->sendMessage(TF::GREEN . ++$files . '. ' . $expl[0] . TF::GRAY . ' (' . Utils::humanFilesize($dir . $file) . ')');
+                    $sender->sendMessage(TF::GREEN . ++$files . '. ' . $expl[0] . TF::GRAY . ' (' . LevelUtils::humanFilesize($dir . $file) . ')');
                 }
             }
             $sender->sendMessage(TF::ITALIC . TF::GRAY . 'Found ' . $files . ' schematics!');
@@ -46,6 +48,10 @@ class SchemCommandExecutor extends BaseCommandExecutor {
         }
 
         if ($args[0] === 'paste') {
+            if(!$sender instanceof Player){
+                $sender->sendMessage(TextFormat::RED . "This command is not for console.");
+                return false;
+            }
             $file = $this->plugin->getDataFolder() . 'schematics/' . $args[1] . '.schematic';
             if (!is_file($file)) {
                 $sender->sendMessage(TF::RED . 'File "' . $file . '" not found.');
@@ -54,7 +60,7 @@ class SchemCommandExecutor extends BaseCommandExecutor {
 
             $schematic = new Schematic($file);
             $force_async = $opts["async"] ?? null;
-            $is_async = $force_async !== null ? ($force_async = $this->getBool($force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false);
+            $is_async = $force_async !== null ? ($force_async = $this->getBool((string)$force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false);
 
             if ($force_async !== null) {
                 $sender->sendMessage(TF::GRAY . 'Asynchronous /' . $label . ' ' . ($force_async ? 'enabled' : 'disabled'));
@@ -68,7 +74,7 @@ class SchemCommandExecutor extends BaseCommandExecutor {
 
             $schematic->paste(
                 $sender->getWorld(),
-                $sender->asVector3(),
+                $sender->getPosition(),
                 function (float $time, int $changed) use ($sender) : void {
                     $sender->sendMessage(TF::GREEN . 'Took ' . number_format($time, 10) . 's to paste ' . number_format($changed) . ' blocks.');
                 }

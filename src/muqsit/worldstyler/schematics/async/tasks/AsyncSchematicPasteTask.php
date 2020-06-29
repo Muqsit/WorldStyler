@@ -21,11 +21,11 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
     /** @var bool */
     private $replace_pc_blocks;
 
-    public function __construct(Vector3 $relative_pos, string $file, bool $replace_pc_blocks = true, ?callable $callable)
+    public function __construct(Vector3 $relative_pos, string $file, ?callable $callable)
     {
         $this->relative_pos = $relative_pos;
         $this->file = $file;
-        $this->replace_pc_blocks = $replace_pc_blocks;
+        $this->replace_pc_blocks = true;
         $this->setCallable($callable);
     }
 
@@ -37,11 +37,9 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
         $length = $schematic->getLength();
         $this->publishProgress([$width, $length]);
 
-        while ($this->chunks === null);
-
         $world = $this->getChunkManager();
         $rel_pos = $this->relative_pos;
-        $schematic->paste($world, $rel_pos, $this->replace_pc_blocks, [$this, "updateStatistics"]);
+        $schematic->paste($world, $rel_pos, [$this, "updateStatistics"]);
         $schematic->invalidate();
 
         $this->saveChunks($world, $rel_pos, $rel_pos->add($width, 0, $length));
@@ -56,7 +54,6 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
 
         $rel_pos = $this->relative_pos;
         $relx = $rel_pos->x;
-        $rely = $rel_pos->y;
         $relz = $rel_pos->z;
 
         for ($x = 0; $x < $width; ++$x) {

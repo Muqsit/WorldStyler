@@ -22,10 +22,12 @@ commands:
     permission: worldstyler.stack
   /fixpcblocks:
     permission: worldstyler.replace
+  /nice:
+      permission: worldstyler.nice
 
 permissions:
   worldstyler:
-    default: false
+    default: op
     description: "Grants access to all WorldStyler permissions."
     children:
       worldstyler.selection:
@@ -33,19 +35,22 @@ permissions:
         default: op
       worldstyler.set:
         description: "Grants access to //set command."
-        default: false
+        default: op
       worldstyler.replace:
         description: "Grants access to //replace command."
-        default: false
+        default: op
       worldstyler.schem:
         description: "Grants access to //schem command."
-        default: false
+        default: op
       worldstyler.copy:
         description: "Grants access to //copy command."
-        default: false
+        default: op
       worldstyler.paste:
         description: "Grants access to //paste command."
-        default: false
+        default: op
       worldstyler.stack:
         description: "Grants access to //stack command."
-        default: false
+        default: op
+      worldstyler.nice:
+        description: "Grants access to //nice command."
+        default: op

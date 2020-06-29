@@ -7,6 +7,8 @@ use muqsit\worldstyler\shapes\CommonShape;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextFormat as TF;
 
 class PasteCommandExecutor extends BaseCommandExecutor {
@@ -18,6 +20,10 @@ class PasteCommandExecutor extends BaseCommandExecutor {
 
     public function onCommandExecute(CommandSender $sender, Command $command, string $label, array $args, array $opts) : bool
     {
+        if(!$sender instanceof Player){
+            $sender->sendMessage(TextFormat::RED . "This command is not for console.");
+            return false;
+        }
         $selection = $this->plugin->getPlayerSelection($sender);
 
         if (!$selection->hasClipboard()) {
@@ -27,24 +33,22 @@ class PasteCommandExecutor extends BaseCommandExecutor {
 
         $air = !(isset($args[0]) && $args[0] === "noair");
 
-        $common_shape = CommonShape::fromSelection($selection);
+        $cuboid = CommonShape::fromSelection($selection);
         $force_async = $opts["async"] ?? null;
-        if ($force_async !== null ? ($force_async = $this->getBool($force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false)) {
-            $cuboid = $common_shape->async();
+        if ($force_async !== null ? ($force_async = $this->getBool((string)$force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false)) {
+             $cuboid = $cuboid->async();
         }
 
         if ($force_async !== null) {
             $sender->sendMessage(TF::GRAY . 'Asynchronous /' . $label . ' ' . ($force_async ? 'enabled' : 'disabled'));
         }
 
-        $common_shape->paste(
+        $cuboid->paste(
             $sender->getWorld(),
-            $sender->asVector3(),
-            $air,
-            function (float $time, int $changed) use ($sender, $air) : void {
-                $sender->sendMessage(TF::GREEN . 'Pasted ' . number_format($changed) . ' blocks in ' . number_format($time, 10) . 's from your clipboard' . ($air ? null : ' (no-air)') . '.');
-            }
+            $sender->getPosition()->asVector3(),
+            $air
         );
+        $sender->sendMessage("Pasted");
         return true;
     }
 }
