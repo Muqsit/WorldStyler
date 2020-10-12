@@ -13,6 +13,7 @@ use pocketmine\world\World;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\tag\CompoundTag;
+use function zlib_decode;
 
 class Schematic {
 
@@ -29,7 +30,7 @@ class Schematic {
 
     public function load() : void
     {
-        $this->namedtag = (new BigEndianNbtSerializer())->read(file_get_contents($this->file))->getTag();
+        $this->namedtag = (new BigEndianNbtSerializer())->read(zlib_decode(file_get_contents($this->file)))->getTag();
     }
 
     public function getWidth() : int
