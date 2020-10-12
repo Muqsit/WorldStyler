@@ -3,9 +3,9 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\utils;
 
-use pocketmine\world\utils\SubChunkIteratorManager;
+use pocketmine\world\utils\SubChunkExplorer;
 
-class BlockIterator extends SubChunkIteratorManager {
+class BlockIterator extends SubChunkExplorer {
 
     public function moveTo(int $x, int $y, int $z, bool $create = true) : bool
     {
@@ -14,7 +14,7 @@ class BlockIterator extends SubChunkIteratorManager {
         }
 
         if ($this->currentSubChunk === null) {
-            $this->currentSubChunk = $this->world->getChunk($this->currentX, $this->currentZ, true)->getSubChunk($y >> 4);
+            $this->currentSubChunk = $this->world->getChunk($this->currentX, $this->currentZ, $create)->getSubChunk($y >> 4);
             return true;
         }
 
