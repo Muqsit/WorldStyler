@@ -77,8 +77,8 @@ class Schematic {
                 for ($y = 0; $y < $height; ++$y) {
                     $index = $y * $wl + $zwx;
 
-                    $id = ord($blockIds{$index});
-                    $damage = ord($blockDatas{$index});
+                    $id = ord($blockIds[$index]);
+                    $damage = ord($blockDatas[$index]);
                     $block = BlockFactory::getInstance()->get($id, $damage);
                     $fullId = $block->getFullId();
 
