@@ -3,10 +3,7 @@
 declare(strict_types=1);
 namespace muqsit\worldstyler\shapes\async\tasks;
 
-use muqsit\worldstyler\shapes\Cuboid;
 use muqsit\worldstyler\utils\BlockToBlockMapping;
-
-use pocketmine\block\Block;
 
 class AsyncCuboidReplaceTask extends AsyncCuboidTask {
 

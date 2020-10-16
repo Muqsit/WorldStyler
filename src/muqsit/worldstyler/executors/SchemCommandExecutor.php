@@ -9,6 +9,7 @@ use muqsit\worldstyler\utils\Utils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat as TF;
 
 class SchemCommandExecutor extends BaseCommandExecutor {
@@ -46,6 +47,10 @@ class SchemCommandExecutor extends BaseCommandExecutor {
         }
 
         if ($args[0] === 'paste') {
+            if(!$sender instanceof Player){
+                $sender->sendMessage(TF::RED . "You cannot run this command.");
+                return false;
+            }
             $file = $this->plugin->getDataFolder() . 'schematics/' . $args[1] . '.schematic';
             if (!is_file($file)) {
                 $sender->sendMessage(TF::RED . 'File "' . $file . '" not found.');
@@ -54,7 +59,7 @@ class SchemCommandExecutor extends BaseCommandExecutor {
 
             $schematic = new Schematic($file);
             $force_async = $opts["async"] ?? null;
-            $is_async = $force_async !== null ? ($force_async = $this->getBool($force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false);
+            $is_async = $force_async !== null ? ($force_async = $this->getBool((string)$force_async)) : $this->plugin->getConfig()->get("use-async-tasks", false);
 
             if ($force_async !== null) {
                 $sender->sendMessage(TF::GRAY . 'Asynchronous /' . $label . ' ' . ($force_async ? 'enabled' : 'disabled'));
@@ -68,7 +73,8 @@ class SchemCommandExecutor extends BaseCommandExecutor {
 
             $schematic->paste(
                 $sender->getWorld(),
-                $sender->asVector3(),
+                $sender->getPosition(),
+                true,
                 function (float $time, int $changed) use ($sender) : void {
                     $sender->sendMessage(TF::GREEN . 'Took ' . number_format($time, 10) . 's to paste ' . number_format($changed) . ' blocks.');
                 }

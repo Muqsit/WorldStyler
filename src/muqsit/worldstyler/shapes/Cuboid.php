@@ -9,7 +9,6 @@ use muqsit\worldstyler\utils\BlockIterator;
 use muqsit\worldstyler\utils\BlockToBlockMapping;
 use muqsit\worldstyler\utils\Utils;
 
-use pocketmine\block\Block;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
@@ -56,9 +55,9 @@ class Cuboid {
     {
         $time = microtime(true);
 
-        $s_pos = $this->pos1->subtract($relative_pos->floor());
+        $s_pos = $this->pos1->subtractVector($relative_pos->floor());
 
-        $cap = $this->pos2->subtract($this->pos1);
+        $cap = $this->pos2->subtractVector($this->pos1);
         $xCap = $cap->x;
         $yCap = $cap->y;
         $zCap = $cap->z;

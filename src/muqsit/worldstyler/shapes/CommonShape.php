@@ -65,7 +65,7 @@ class CommonShape {
         $changed = 0;
         $time = microtime(true);
 
-        $relative_pos = $relative_pos->floor()->add($this->selection->getClipboardRelativePos());
+        $relative_pos = $relative_pos->floor()->addVector($this->selection->getClipboardRelativePos());
         $relx = $relative_pos->x;
         $rely = $relative_pos->y;
         $relz = $relative_pos->z;
@@ -89,7 +89,7 @@ class CommonShape {
                         if ($replace_air || ($fullBlock >> 4) !== BlockLegacyIds::AIR) {
                             $yPos = $rely + $y;
                             $iterator->moveTo($xPos, $yPos, $zPos);
-                            $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, $fullBlock);
+                            $iterator->currentSubChunk->setFullBlock($xPos & 0x0f, $yPos & 0x0f, $zPos & 0x0f, (int)$fullBlock);
                             ++$changed;
                         }
                     }

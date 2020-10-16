@@ -9,7 +9,6 @@ use muqsit\worldstyler\shapes\async\tasks\AsyncCuboidSetTask;
 use muqsit\worldstyler\shapes\Cuboid;
 use muqsit\worldstyler\utils\BlockToBlockMapping;
 
-use pocketmine\block\Block;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use pocketmine\math\Vector3;
@@ -60,7 +59,7 @@ class AsyncCuboid extends Cuboid {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $world->getChunk($chunkX, $chunkZ, $create);
+                $chunks[] = $world->getOrLoadChunk($chunkX, $chunkZ, $create);
             }
         }
 

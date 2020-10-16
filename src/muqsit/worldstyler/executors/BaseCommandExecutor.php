@@ -43,7 +43,7 @@ abstract class BaseCommandExecutor implements CommandExecutor {
 
         if (!empty($this->options)) {
             foreach ($args as $index => $arg) {
-                if ($arg{0} === "-") {
+                if ($arg[0] === "-") {
                     $offset = 0;
                     $len = strlen($arg);
                     while ($offset < $len) {

@@ -29,7 +29,7 @@ class AsyncCommonShape extends CommonShape {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $world->getChunk($chunkX, $chunkZ, true);
+                $chunks[] = $world->getOrLoadChunk($chunkX, $chunkZ, true);
             }
         }
 
@@ -41,7 +41,7 @@ class AsyncCommonShape extends CommonShape {
         $world->getServer()->getAsyncPool()->submitTask($task);
     }
 
-    public function paste(ChunkManager $world, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable) : void
+    public function paste(ChunkManager $world, Vector3 $relative_pos, bool $replace_air = true, ?callable $callable = null) : void
     {
         if (!($world instanceof World)) {
             throw new \InvalidArgumentException("\$world should be an instance of " . World::class . " in asynchronous classes, got " . get_class($world));
@@ -50,14 +50,14 @@ class AsyncCommonShape extends CommonShape {
         $chunks = [];
 
         $caps = $this->selection->getClipboardCaps();
-        $minChunkX = ($start->x + $caps->x) >> 4;
-        $minChunkZ = ($start->z + $caps->z) >> 4;
-        $maxChunkX = ($start->x + ($caps->x * $repetitions)) >> 4;
-        $maxChunkZ = ($start->z + ($caps->z * $repetitions)) >> 4;
+        $minChunkX = $relative_pos->x >> 4;
+        $minChunkZ = $relative_pos->z >> 4;
+        $maxChunkX = ($relative_pos->x + $caps->x) >> 4;
+        $maxChunkZ = ($relative_pos->z + $caps->z) >> 4;
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $world->getChunk($chunkX, $chunkZ, true);
+                $chunks[] = $world->getOrLoadChunk($chunkX, $chunkZ, true);
             }
         }
 
