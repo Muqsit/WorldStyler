@@ -59,7 +59,7 @@ class AsyncCuboid extends Cuboid {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $world->getChunk($chunkX, $chunkZ, $create);
+                $chunks[] = $world->getOrLoadChunk($chunkX, $chunkZ, $create);
             }
         }
 

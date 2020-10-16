@@ -62,7 +62,7 @@ class AsyncSchematicPasteTask extends AsyncChunksChangeTask {
             $chunkX = ($x + $relx) >> 4;
             for ($z = 0; $z < $length; ++$z) {
                 $chunkZ = ($z + $relz) >> 4;
-                $chunks[World::chunkHash($chunkX, $chunkZ)] = $world->getChunk($chunkX, $chunkZ, true);
+                $chunks[World::chunkHash($chunkX, $chunkZ)] = $world->getOrLoadChunk($chunkX, $chunkZ, true);
             }
         }
 

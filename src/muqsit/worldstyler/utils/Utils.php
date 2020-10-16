@@ -26,7 +26,7 @@ class Utils {
     {
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunk = $world->getChunk($chunkX, $chunkZ);
+                $chunk = $world->getOrLoadChunk($chunkX, $chunkZ);
                 $chunk->setDirty();
                 $world->setChunk($chunkX, $chunkZ, $chunk, false);
             }

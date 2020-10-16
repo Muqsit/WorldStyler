@@ -14,7 +14,7 @@ class BlockIterator extends SubChunkExplorer {
         }
 
         if ($this->currentSubChunk === null) {
-            $this->currentSubChunk = $this->world->getChunk($this->currentX, $this->currentZ, $create)->getSubChunk($y >> 4);
+            $this->currentSubChunk = $this->world->getOrLoadChunk($this->currentX, $this->currentZ, $create)->getSubChunk($y >> 4);
             return true;
         }
 

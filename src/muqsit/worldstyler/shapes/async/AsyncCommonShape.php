@@ -29,7 +29,7 @@ class AsyncCommonShape extends CommonShape {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $world->getChunk($chunkX, $chunkZ, true);
+                $chunks[] = $world->getOrLoadChunk($chunkX, $chunkZ, true);
             }
         }
 
@@ -57,7 +57,7 @@ class AsyncCommonShape extends CommonShape {
 
         for ($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX) {
             for ($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ) {
-                $chunks[] = $world->getChunk($chunkX, $chunkZ, true);
+                $chunks[] = $world->getOrLoadChunk($chunkX, $chunkZ, true);
             }
         }
 
