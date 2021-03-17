@@ -27,25 +27,24 @@ permissions:
   worldstyler:
     default: false
     description: "Grants access to all WorldStyler permissions."
-    children:
-      worldstyler.selection:
-        description: "Grants access to //pos1 and //pos2 commands."
-        default: op
-      worldstyler.set:
-        description: "Grants access to //set command."
-        default: false
-      worldstyler.replace:
-        description: "Grants access to //replace command."
-        default: false
-      worldstyler.schem:
-        description: "Grants access to //schem command."
-        default: false
-      worldstyler.copy:
-        description: "Grants access to //copy command."
-        default: false
-      worldstyler.paste:
-        description: "Grants access to //paste command."
-        default: false
-      worldstyler.stack:
-        description: "Grants access to //stack command."
-        default: false
+  worldstyler.selection:
+    description: "Grants access to //pos1 and //pos2 commands."
+    default: op
+  worldstyler.set:
+    description: "Grants access to //set command."
+    default: false
+  worldstyler.replace:
+    description: "Grants access to //replace command."
+    default: false
+  worldstyler.schem:
+    description: "Grants access to //schem command."
+    default: false
+  worldstyler.copy:
+    description: "Grants access to //copy command."
+    default: false
+  worldstyler.paste:
+    description: "Grants access to //paste command."
+    default: false
+  worldstyler.stack:
+    description: "Grants access to //stack command."
+    default: false
